@@ -24,7 +24,7 @@ use crate::ecs::resource::KeyboardKeyStates;
 use crate::media::Key;
 use specs::{self, Join};
 use super::System;
-use types::{Fixed, Norm, Vector3};
+use crate::types::{Fixed, Norm, Vector3, fixed_const};
 
 // TODO: Doesn't currently match the camera speed in the original game
 const CAMERA_SPEED: Fixed = fixed_const!(400);

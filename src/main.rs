@@ -28,12 +28,7 @@ use chariot_scn as scn;
 use chariot_media as media;
 use chariot_resource as resource;
 use chariot_identifier as identifier;
-
-#[macro_use]
-extern crate chariot_types as types;
-
-#[macro_use]
-extern crate lazy_static;
+use chariot_types as types;
 
 #[macro_use]
 mod macros;

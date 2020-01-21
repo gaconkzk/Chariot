@@ -42,7 +42,7 @@ use crate::media::{KeyState, MouseButton, Key};
 use crate::resource::DrsKey;
 use specs::{self, Join};
 use super::System;
-use types::{Fixed, Vector3};
+use crate::types::{Fixed, Vector3};
 use crate::util::unit;
 
 pub struct UnitSelectionSystem {

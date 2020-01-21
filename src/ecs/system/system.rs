@@ -21,7 +21,7 @@
 
 use specs;
 use super::super::world::SystemGroup;
-use types::Fixed;
+use crate::types::Fixed;
 
 pub trait System: Send {
     fn update(&mut self, arg: specs::RunArg, time_step: Fixed);

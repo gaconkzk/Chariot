@@ -26,7 +26,7 @@ use std::cmp;
 use std::cmp::Ordering;
 use std::collections::BinaryHeap;
 use std::collections::HashSet;
-use crate::types::{Fixed, ToFixed, Vector3};
+use crate::types::{Fixed, ToFixed, Vector3, fixed_const};
 
 const PASSABILITY_THRESHOLD: f32 = 0.999;
 

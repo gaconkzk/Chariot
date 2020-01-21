@@ -24,7 +24,7 @@ use crate::ecs::{TransformComponent, UnitComponent};
 use crate::ecs::resource::OccupiedTiles;
 use specs::{self, Join};
 use super::System;
-use types::{Fixed, ToPrimitive};
+use crate::types::{Fixed, ToPrimitive};
 use crate::util::unit;
 
 pub struct OccupiedTileSystem {

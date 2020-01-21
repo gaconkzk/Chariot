@@ -21,7 +21,7 @@
 
 use specs;
 use super::super::world::SystemGroup;
-use types::Fixed;
+use crate::types::Fixed;
 
 pub trait RenderSystem: Send {
     fn render(&mut self, arg: specs::RunArg, lerp: Fixed);

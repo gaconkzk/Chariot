@@ -22,6 +22,7 @@
 
 use std::fmt;
 use super::dir;
+use lazy_static::lazy_static;
 
 #[derive(Copy, Clone)]
 pub struct BorderMatrix(u16);

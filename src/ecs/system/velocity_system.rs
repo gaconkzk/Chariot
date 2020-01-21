@@ -24,7 +24,7 @@ use nalgebra::Vector2;
 use crate::partition::GridPartition;
 use specs::{self, Join};
 use super::System;
-use types::{Fixed, Norm};
+use crate::types::{Fixed, Norm, fixed_const};
 
 pub struct VelocitySystem;
 

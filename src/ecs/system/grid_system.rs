@@ -25,7 +25,7 @@ use nalgebra::Vector2;
 use crate::partition::GridPartition;
 use specs::{self, Join};
 use super::System;
-use types::Fixed;
+use crate::types::Fixed;
 
 /// System the updates the grid partition with the latest entity positions
 pub struct GridSystem;

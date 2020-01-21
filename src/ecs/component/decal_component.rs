@@ -22,7 +22,7 @@
 use crate::identifier::{PlayerColorId, SlpFileId};
 use crate::resource::DrsKey;
 use specs;
-use types::Fixed;
+use crate::types::Fixed;
 
 #[derive(Clone, Debug)]
 pub struct DecalComponent {

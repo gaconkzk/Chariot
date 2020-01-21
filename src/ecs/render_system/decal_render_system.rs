@@ -24,7 +24,7 @@ use crate::ecs::resource::{RenderCommands, ViewProjector};
 use crate::resource::{RenderCommand, ShapeKey};
 use specs::{self, Join};
 use super::RenderSystem;
-use types::Fixed;
+use crate::types::Fixed;
 
 pub struct DecalRenderSystem;
 

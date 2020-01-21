@@ -24,7 +24,7 @@ use crate::ecs::component::{MoveToPositionActionComponent, ActionQueueComponent}
 use crate::ecs::resource::ActionBatcher;
 use specs::{self, Join};
 use super::System;
-use types::Fixed;
+use crate::types::{Fixed, fixed_const};
 
 // This is just a temporary batch length value
 // It'll be subject to the latencies of networking later

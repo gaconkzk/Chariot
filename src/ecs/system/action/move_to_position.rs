@@ -23,7 +23,7 @@ use crate::dat::EmpiresDbRef;
 use crate::ecs::component::{UnitComponent, MoveToPositionActionComponent, TransformComponent, GraphicComponent, ActionQueueComponent, VelocityComponent};
 use specs::{self, Join};
 use super::super::System;
-use types::{Fixed, Norm, Vector3};
+use crate::types::{Fixed, Norm, Vector3, fixed_const};
 
 const THRESHOLD: Fixed = fixed_const!(0.1);
 

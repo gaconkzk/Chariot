@@ -20,7 +20,7 @@
 // SOFTWARE.
 
 use specs;
-use types::{Fixed, Vector3};
+use crate::types::{Fixed, Vector3};
 
 #[derive(Clone, Debug)]
 pub struct TransformComponent {

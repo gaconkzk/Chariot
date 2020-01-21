@@ -23,7 +23,7 @@ use crate::ecs::DecalComponent;
 use crate::resource::{ShapeMetadataKey, ShapeMetadataStoreRef};
 use specs::{self, Join};
 use super::System;
-use types::Fixed;
+use crate::types::{Fixed, fixed_const};
 
 // Hardcoded framerate for now
 const SECONDS_PER_FRAME: Fixed = fixed_const!(0.1);

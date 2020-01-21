@@ -21,7 +21,7 @@
 
 use crate::identifier::{GraphicId, PlayerColorId};
 use specs;
-use types::Fixed;
+use crate::types::Fixed;
 
 #[derive(Clone, Debug)]
 pub struct GraphicComponent {

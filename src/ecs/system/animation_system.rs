@@ -25,7 +25,7 @@ use crate::resource::{DrsKey, ShapeMetadataKey, ShapeMetadataStoreRef};
 use specs::{self, Join};
 use std::ops::Rem;
 use super::System;
-use types::Fixed;
+use crate::types::Fixed;
 
 pub struct AnimationSystem {
     empires: dat::EmpiresDbRef,
@@ -134,7 +134,7 @@ fn frame_at_time(time: Fixed, frame_rate: Fixed, frame_count: u16, replay_delay:
 #[cfg(test)]
 mod tests {
     use super::{frame_at_time, start_frame_and_mirroring, wrap_angle};
-    use types::Fixed;
+    use crate::types::Fixed;
 
     #[test]
     fn test_start_frame_and_mirroring() {

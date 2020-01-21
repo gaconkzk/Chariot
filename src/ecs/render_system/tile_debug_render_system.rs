@@ -24,7 +24,7 @@ use crate::media::{Key, KeyState};
 use crate::resource::{DrsKey, RenderCommand, ShapeKey};
 use specs;
 use super::RenderSystem;
-use types::Fixed;
+use crate::types::Fixed;
 
 /// Used for debugging tile positions and tile picking
 pub struct TileDebugRenderSystem;

@@ -24,7 +24,7 @@ use crate::ecs::resource::Viewport;
 use nalgebra::Vector2;
 use specs::{self, Join};
 use super::System;
-use types::Fixed;
+use crate::types::Fixed;
 
 pub struct CameraPositionSystem;
 

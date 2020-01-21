@@ -22,6 +22,7 @@
 
 use std::fmt;
 use super::dir;
+use lazy_static::lazy_static;
 
 /// Relative elevation levels encoded in a u8 in this format:
 /// [W NW N SW NE S SE E]

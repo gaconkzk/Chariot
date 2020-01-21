@@ -32,7 +32,9 @@ use std::cmp;
 
 use std::collections::HashMap;
 use super::RenderSystem;
-use types::{Fixed, Rect, Vector3};
+use crate::types::{Fixed, Rect, Vector3};
+
+use lazy_static::lazy_static;
 
 const TERRAIN_LAYER: u16 = 0;
 

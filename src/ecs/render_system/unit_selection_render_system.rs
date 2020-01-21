@@ -25,7 +25,7 @@ use crate::ecs::resource::{RenderCommands, ViewProjector};
 use crate::resource::RenderCommand;
 use specs::{self, Join};
 use super::RenderSystem;
-use types::{Color, Fixed, Vector3};
+use crate::types::{Color, Fixed, Vector3};
 use crate::util::unit;
 
 pub struct UnitSelectionRenderSystem {

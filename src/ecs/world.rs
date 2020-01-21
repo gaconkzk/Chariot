@@ -30,7 +30,7 @@ use crate::scn;
 use specs;
 use std::collections::HashMap;
 use super::component::{DecalComponent, UnitComponent, OnScreenComponent, CameraComponent, MoveToPositionActionComponent, TransformComponent, GraphicComponent, ActionQueueComponent, VelocityComponent, SelectedUnitComponent};
-use types::{Fixed, Vector3};
+use crate::types::{Fixed, Vector3};
 
 const NUM_THREADS: usize = 4;
 const GRID_CELL_SIZE: i32 = 10; // in tiles

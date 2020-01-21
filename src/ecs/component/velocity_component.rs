@@ -20,7 +20,7 @@
 // SOFTWARE.
 
 use specs;
-use types::Vector3;
+use crate::types::Vector3;
 
 #[derive(Clone, Debug)]
 pub struct VelocityComponent {
