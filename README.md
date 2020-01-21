@@ -14,6 +14,8 @@ play it. No game data files will be committed to the repository.
 
 **Note:** This is a work in progress. As of 2016-07-08, there is no game to be played. Just a demonstration of the original game assets being loaded and other proof of concepts. It will be a while before it is playable.
 
+>ME: Upgraded all libraries and rust to latest version (except `specs` which almost changed since 0.7 <-> 0.15)
+
 # WIP Screenshot
 
 ![Work in Progress Screenshot](https://cloud.githubusercontent.com/assets/20009343/16906794/daccd474-4c71-11e6-90ec-6821e5797b5c.png)
