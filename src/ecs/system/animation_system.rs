@@ -19,9 +19,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use dat;
-use ecs::{GraphicComponent, TransformComponent};
-use resource::{DrsKey, ShapeMetadataKey, ShapeMetadataStoreRef};
+use crate::dat;
+use crate::ecs::{GraphicComponent, TransformComponent};
+use crate::resource::{DrsKey, ShapeMetadataKey, ShapeMetadataStoreRef};
 use specs::{self, Join};
 use std::ops::Rem;
 use super::System;

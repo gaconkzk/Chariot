@@ -19,14 +19,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use dat;
-use ecs::resource::{OccupiedTiles, Terrain};
-use identifier::{TerrainId, UnitTerrainRestrictionId};
+use crate::dat;
+use crate::ecs::resource::{OccupiedTiles, Terrain};
+use crate::identifier::{TerrainId, UnitTerrainRestrictionId};
 use std::cmp;
 use std::cmp::Ordering;
 use std::collections::BinaryHeap;
 use std::collections::HashSet;
-use types::{Fixed, ToFixed, Vector3};
+use crate::types::{Fixed, ToFixed, Vector3};
 
 const PASSABILITY_THRESHOLD: f32 = 0.999;
 
@@ -94,7 +94,7 @@ impl PassabilityProvider for EmpiresPassabilityProvider {
 }
 
 pub struct PathFinder {
-    passability_provider: Box<PassabilityProvider>,
+    passability_provider: Box<dyn PassabilityProvider>,
 }
 
 impl PathFinder {
@@ -103,7 +103,7 @@ impl PathFinder {
     }
 
     #[cfg(test)]
-    fn new_with(passability_provider: Box<PassabilityProvider>) -> PathFinder {
+    fn new_with(passability_provider: Box<dyn PassabilityProvider>) -> PathFinder {
         PathFinder { passability_provider: passability_provider }
     }
 
@@ -229,9 +229,9 @@ fn clamp(node: TileNode, width: i32, height: i32) -> TileNode {
 
 #[cfg(test)]
 mod tests {
-    use dat::{EmpiresDb, EmpiresDbRef};
-    use ecs::resource::{OccupiedTiles, Terrain, Tile};
-    use identifier::{TerrainId, UnitTerrainRestrictionId};
+    use crate::dat::{EmpiresDb, EmpiresDbRef};
+    use crate::ecs::resource::{OccupiedTiles, Terrain, Tile};
+    use crate::identifier::{TerrainId, UnitTerrainRestrictionId};
     use super::*;
     use super::PassabilityProvider;
 

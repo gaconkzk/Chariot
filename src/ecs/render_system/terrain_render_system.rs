@@ -20,13 +20,13 @@
 // SOFTWARE.
 
 
-use dat;
-use ecs::resource::{RenderCommands, Terrain, ViewProjector, Viewport};
-use ecs::resource::terrain::{BlendInfo, BorderMatch, ElevationGraphic, ElevationMatch};
-use identifier::{SlpFileId, TerrainBorderId, TerrainId};
+use crate::dat;
+use crate::ecs::resource::{RenderCommands, Terrain, ViewProjector, Viewport};
+use crate::ecs::resource::terrain::{BlendInfo, BorderMatch, ElevationGraphic, ElevationMatch};
+use crate::identifier::{SlpFileId, TerrainBorderId, TerrainId};
 
 use nalgebra::Vector2;
-use resource::{DrsKey, RenderCommand, ShapeKey};
+use crate::resource::{DrsKey, RenderCommand, ShapeKey};
 use specs;
 use std::cmp;
 

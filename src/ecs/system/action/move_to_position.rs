@@ -19,8 +19,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use dat::EmpiresDbRef;
-use ecs::component::{UnitComponent, MoveToPositionActionComponent, TransformComponent, GraphicComponent, ActionQueueComponent, VelocityComponent};
+use crate::dat::EmpiresDbRef;
+use crate::ecs::component::{UnitComponent, MoveToPositionActionComponent, TransformComponent, GraphicComponent, ActionQueueComponent, VelocityComponent};
 use specs::{self, Join};
 use super::super::System;
 use types::{Fixed, Norm, Vector3};
@@ -49,7 +49,7 @@ impl System for MoveToPositionActionSystem {
         ]);
 
         let items = (&mut velocities, &transforms, &units, &mut graphics, &mut mtps, &mut action_queues);
-        for (mut velocity, transform, unit, mut graphic, mut mtps, mut action_queue) in items.iter() {
+        for (mut velocity, transform, unit, graphic, mtps, action_queue) in items.iter() {
             let done = if mtps.path.is_empty() {
                 true
             } else {

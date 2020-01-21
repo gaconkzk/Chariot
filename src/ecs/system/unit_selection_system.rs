@@ -22,11 +22,11 @@
 
 //! This system is responsible for unit selection and queuing up a MoveToPosition action.
 
-use action::{Action, MoveToPositionParams};
-use dat;
-use ecs::{DecalComponent, OnScreenComponent, SelectedUnitComponent, TransformComponent, UnitComponent};
+use crate::action::{Action, MoveToPositionParams};
+use crate::dat;
+use crate::ecs::{DecalComponent, OnScreenComponent, SelectedUnitComponent, TransformComponent, UnitComponent};
 
-use ecs::resource::{
+use crate::ecs::resource::{
     MouseState,
     KeyboardKeyStates,
     PathFinder,
@@ -38,12 +38,12 @@ use ecs::resource::{
     ActionBatcher,
 };
 
-use media::{KeyState, MouseButton, Key};
-use resource::DrsKey;
+use crate::media::{KeyState, MouseButton, Key};
+use crate::resource::DrsKey;
 use specs::{self, Join};
 use super::System;
 use types::{Fixed, Vector3};
-use util::unit;
+use crate::util::unit;
 
 pub struct UnitSelectionSystem {
     empires: dat::EmpiresDbRef,

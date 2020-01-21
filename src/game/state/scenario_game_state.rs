@@ -19,14 +19,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use ecs;
-use ecs::resource::{KeyboardKeyStates, MouseState, RenderCommands, Viewport};
-use game::{Game, GameState};
-use media::MediaRef;
+use crate::ecs;
+use crate::ecs::resource::{KeyboardKeyStates, MouseState, RenderCommands, Viewport};
+use crate::game::{Game, GameState};
+use crate::media::MediaRef;
 use nalgebra::{Vector2, convert};
-use resource::ShapeManagerRef;
-use scn;
-use types::Fixed;
+use crate::resource::ShapeManagerRef;
+use crate::scn;
+use crate::types::Fixed;
 
 pub struct ScenarioGameState {
     media: MediaRef,

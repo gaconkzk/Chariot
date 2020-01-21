@@ -19,9 +19,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use action::Action;
-use ecs::component::{MoveToPositionActionComponent, ActionQueueComponent};
-use ecs::resource::ActionBatcher;
+use crate::action::Action;
+use crate::ecs::component::{MoveToPositionActionComponent, ActionQueueComponent};
+use crate::ecs::resource::ActionBatcher;
 use specs::{self, Join};
 use super::System;
 use types::Fixed;

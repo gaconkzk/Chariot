@@ -20,7 +20,7 @@
 // SOFTWARE.
 
 use nalgebra::Vector2;
-use types::Fixed;
+use crate::types::Fixed;
 
 pub struct Viewport {
     current_top_left: Vector2<Fixed>,

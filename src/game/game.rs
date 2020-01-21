@@ -19,13 +19,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use dat::{EmpiresDb, EmpiresDbRef};
-use media::{self, MediaRef};
-use resource::{DrsManager, DrsManagerRef, GameDir, ShapeManager, ShapeManagerRef, ShapeMetadataStore,
+use crate::dat::{EmpiresDb, EmpiresDbRef};
+use crate::media::{self, MediaRef};
+use crate::resource::{DrsManager, DrsManagerRef, GameDir, ShapeManager, ShapeManagerRef, ShapeMetadataStore,
                ShapeMetadataStoreRef};
 use super::state::GameState;
-use time;
-use types::Fixed;
+use std::time::{Instant};
+use crate::types::Fixed;
 
 const WINDOW_TITLE: &'static str = "Chariot";
 const WINDOW_WIDTH: u32 = 1024;
@@ -38,7 +38,7 @@ pub struct Game {
     shape_metadata: ShapeMetadataStoreRef,
     empires: EmpiresDbRef,
     media: MediaRef,
-    states: Vec<Box<GameState>>,
+    states: Vec<Box<dyn GameState>>,
 }
 
 impl Game {
@@ -79,8 +79,8 @@ impl Game {
         }
     }
 
-    pub fn push_state(&mut self, mut state: Box<GameState>) {
-        if let Some(mut prev_state) = self.current_state() {
+    pub fn push_state(&mut self, mut state: Box<dyn GameState>) {
+        if let Some(prev_state) = self.current_state() {
             prev_state.stop();
         }
         state.start();
@@ -92,14 +92,13 @@ impl Game {
         let time_step_seconds = Fixed::from(1) / Fixed::from(60);
 
         let mut accumulator: u64 = 0;
-        let mut last_time = time::precise_time_ns();
+        let mut start_time = Instant::now();
 
         while self.media.borrow().is_open() {
             self.media.borrow_mut().renderer().present();
 
-            let new_time = time::precise_time_ns();
-            accumulator += new_time - last_time;
-            last_time = new_time;
+            accumulator += start_time.elapsed().as_secs();
+            start_time = Instant::now();
 
             while accumulator >= time_step_nanos {
                 self.media.borrow_mut().update();
@@ -141,7 +140,7 @@ impl Game {
         result
     }
 
-    fn current_state<'a>(&'a mut self) -> Option<&'a mut GameState> {
+    fn current_state<'a>(&'a mut self) -> Option<&'a mut dyn GameState> {
         if !self.states.is_empty() {
             let index = self.states.len() - 1; // satisfy the borrow checker
             Some(&mut *self.states[index])

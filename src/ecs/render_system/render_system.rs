@@ -27,10 +27,10 @@ pub trait RenderSystem: Send {
     fn render(&mut self, arg: specs::RunArg, lerp: Fixed);
 }
 
-pub struct RenderSystemWrapper(Box<RenderSystem>);
+pub struct RenderSystemWrapper(Box<dyn RenderSystem>);
 
 impl RenderSystemWrapper {
-    pub fn new(render_system: Box<RenderSystem>) -> RenderSystemWrapper {
+    pub fn new(render_system: Box<dyn RenderSystem>) -> RenderSystemWrapper {
         RenderSystemWrapper(render_system)
     }
 }

@@ -27,10 +27,10 @@ pub trait System: Send {
     fn update(&mut self, arg: specs::RunArg, time_step: Fixed);
 }
 
-pub struct SystemWrapper(Box<System>);
+pub struct SystemWrapper(Box<dyn System>);
 
 impl SystemWrapper {
-    pub fn new(system: Box<System>) -> SystemWrapper {
+    pub fn new(system: Box<dyn System>) -> SystemWrapper {
         SystemWrapper(system)
     }
 }

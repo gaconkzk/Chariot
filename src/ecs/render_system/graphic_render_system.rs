@@ -19,12 +19,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use dat;
-use ecs::{GraphicComponent, OnScreenComponent, TransformComponent};
-use ecs::resource::{RenderCommands, ViewProjector};
-use identifier::{GraphicId, PlayerColorId};
+use crate::dat;
+use crate::ecs::{GraphicComponent, OnScreenComponent, TransformComponent};
+use crate::ecs::resource::{RenderCommands, ViewProjector};
+use crate::identifier::{GraphicId, PlayerColorId};
 use nalgebra::Vector2;
-use resource::{DrsKey, RenderCommand, ShapeKey};
+use crate::resource::{DrsKey, RenderCommand, ShapeKey};
 use specs::{self, Join};
 use super::RenderSystem;
 use types::Fixed;

@@ -19,8 +19,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use ecs::DecalComponent;
-use resource::{ShapeMetadataKey, ShapeMetadataStoreRef};
+use crate::ecs::DecalComponent;
+use crate::resource::{ShapeMetadataKey, ShapeMetadataStoreRef};
 use specs::{self, Join};
 use super::System;
 use types::Fixed;

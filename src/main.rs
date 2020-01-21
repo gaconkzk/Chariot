@@ -19,27 +19,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-extern crate chariot_drs as drs;
-extern crate chariot_slp as slp;
-extern crate chariot_palette as palette;
-extern crate chariot_dat as dat;
-extern crate chariot_language as language;
-extern crate chariot_scn as scn;
-extern crate chariot_media as media;
-extern crate chariot_resource as resource;
-extern crate chariot_identifier as identifier;
+use chariot_drs as drs;
+use chariot_slp as slp;
+use chariot_palette as palette;
+use chariot_dat as dat;
+use chariot_language as language;
+use chariot_scn as scn;
+use chariot_media as media;
+use chariot_resource as resource;
+use chariot_identifier as identifier;
 
 #[macro_use]
 extern crate chariot_types as types;
 
 #[macro_use]
 extern crate lazy_static;
-
-extern crate clap;
-extern crate nalgebra;
-extern crate num;
-extern crate specs;
-extern crate time;
 
 #[macro_use]
 mod macros;
@@ -77,7 +71,7 @@ fn main() {
 
     let mut game = Game::new(game_data_dir);
     let initial_state = Box::new(ScenarioGameState::new(&game, scenario));
-    game.push_state(initial_state as Box<GameState>);
+    game.push_state(initial_state as Box<dyn GameState>);
 
     game.game_loop();
 }

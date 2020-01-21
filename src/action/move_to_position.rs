@@ -19,7 +19,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use ecs::resource::path_finder::Path;
+use crate::ecs::resource::path_finder::Path;
 
 #[derive(Clone, Debug)]
 pub struct MoveToPositionParams {

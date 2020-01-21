@@ -22,11 +22,8 @@ clap = "2.33.0"
 lazy_static = "1.4.0"
 nalgebra = "0.19.0"
 num = "0.2.1"
-specs = "0.15.1"
+specs = "0.7.1"
 time = "0.2.3"
-chariot_drs = "0.1"
-chariot_slp = "0.1"
-chariot_palette = "0.1"
 
 [dependencies.chariot_dat]
 path = "crates/file_formats/dat"
@@ -43,3 +40,9 @@ path = "crates/resource"
 path = "crates/types"
 [dependencies.chariot_identifier]
 path = "crates/identifier"
+[dependencies.chariot_drs]
+path = "crates/drs"
+[dependencies.chariot_palette]
+path = "crates/palette"
+[dependencies.chariot_slp]
+path = "crates/slp"

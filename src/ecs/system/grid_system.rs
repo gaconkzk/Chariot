@@ -19,10 +19,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use ecs::OnScreenComponent;
-use ecs::resource::{Terrain, ViewProjector, Viewport};
+use crate::ecs::OnScreenComponent;
+use crate::ecs::resource::{Terrain, ViewProjector, Viewport};
 use nalgebra::Vector2;
-use partition::GridPartition;
+use crate::partition::GridPartition;
 use specs::{self, Join};
 use super::System;
 use types::Fixed;

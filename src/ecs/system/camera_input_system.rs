@@ -19,9 +19,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use ecs::{CameraComponent, VelocityComponent};
-use ecs::resource::KeyboardKeyStates;
-use media::Key;
+use crate::ecs::{CameraComponent, VelocityComponent};
+use crate::ecs::resource::KeyboardKeyStates;
+use crate::media::Key;
 use specs::{self, Join};
 use super::System;
 use types::{Fixed, Norm, Vector3};

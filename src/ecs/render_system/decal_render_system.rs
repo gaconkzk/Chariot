@@ -19,9 +19,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use ecs::{DecalComponent, TransformComponent};
-use ecs::resource::{RenderCommands, ViewProjector};
-use resource::{RenderCommand, ShapeKey};
+use crate::ecs::{DecalComponent, TransformComponent};
+use crate::ecs::resource::{RenderCommands, ViewProjector};
+use crate::resource::{RenderCommand, ShapeKey};
 use specs::{self, Join};
 use super::RenderSystem;
 use types::Fixed;

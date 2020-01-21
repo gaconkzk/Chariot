@@ -19,8 +19,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use dat;
-use identifier::{CivilizationId, UnitId, PlayerId};
+use crate::dat;
+use crate::identifier::{CivilizationId, UnitId, PlayerId};
 use specs;
 
 #[derive(Clone, Debug)]

@@ -19,7 +19,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use types::Fixed;
+use crate::types::Fixed;
 
 pub trait GameState {
     /// Called when a game state is about to start its update cycle

@@ -19,9 +19,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use ecs::{TransformComponent, VelocityComponent};
+use crate::ecs::{TransformComponent, VelocityComponent};
 use nalgebra::Vector2;
-use partition::GridPartition;
+use crate::partition::GridPartition;
 use specs::{self, Join};
 use super::System;
 use types::{Fixed, Norm};

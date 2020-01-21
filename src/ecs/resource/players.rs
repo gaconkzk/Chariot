@@ -19,8 +19,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use identifier::{CivilizationId, PlayerColorId, PlayerId};
-use scn::Scenario;
+use crate::identifier::{CivilizationId, PlayerColorId, PlayerId};
+use crate::scn::Scenario;
 use std::collections::HashMap;
 
 pub struct Player {

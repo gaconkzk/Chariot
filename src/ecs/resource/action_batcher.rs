@@ -19,7 +19,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use action::Action;
+use crate::action::Action;
 use specs::Index;
 use std::collections::HashMap;
 use std::mem;

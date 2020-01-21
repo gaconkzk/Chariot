@@ -19,13 +19,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use dat;
-use ecs::{TransformComponent, UnitComponent};
-use ecs::resource::OccupiedTiles;
+use crate::dat;
+use crate::ecs::{TransformComponent, UnitComponent};
+use crate::ecs::resource::OccupiedTiles;
 use specs::{self, Join};
 use super::System;
 use types::{Fixed, ToPrimitive};
-use util::unit;
+use crate::util::unit;
 
 pub struct OccupiedTileSystem {
     empires: dat::EmpiresDbRef,

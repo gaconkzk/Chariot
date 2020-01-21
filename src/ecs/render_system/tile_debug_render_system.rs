@@ -19,9 +19,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use ecs::resource::{KeyboardKeyStates, MouseState, RenderCommands, Terrain, ViewProjector, Viewport};
-use media::{Key, KeyState};
-use resource::{DrsKey, RenderCommand, ShapeKey};
+use crate::ecs::resource::{KeyboardKeyStates, MouseState, RenderCommands, Terrain, ViewProjector, Viewport};
+use crate::media::{Key, KeyState};
+use crate::resource::{DrsKey, RenderCommand, ShapeKey};
 use specs;
 use super::RenderSystem;
 use types::Fixed;

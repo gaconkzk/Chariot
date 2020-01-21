@@ -19,14 +19,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use dat::EmpiresDbRef;
-use ecs::render_system::{TerrainRenderSystem, GraphicRenderSystem, UnitSelectionRenderSystem, RenderSystemWrapper, DecalRenderSystem, TileDebugRenderSystem};
-use ecs::resource::{ViewProjector, RenderCommands, PathFinder, KeyboardKeyStates, Players, OccupiedTiles, ActionBatcher, Viewport, Terrain, MouseState};
-use ecs::system::{VelocitySystem, SystemWrapper, DecalSystem, AnimationSystem, UnitSelectionSystem, OccupiedTileSystem, CameraPositionSystem, MoveToPositionActionSystem, UnitActionSystem, GridSystem, CameraInputSystem};
-use media::MediaRef;
-use partition::GridPartition;
-use resource::ShapeMetadataStoreRef;
-use scn;
+use crate::dat::EmpiresDbRef;
+use crate::ecs::render_system::{TerrainRenderSystem, GraphicRenderSystem, UnitSelectionRenderSystem, RenderSystemWrapper, DecalRenderSystem, TileDebugRenderSystem};
+use crate::ecs::resource::{ViewProjector, RenderCommands, PathFinder, KeyboardKeyStates, Players, OccupiedTiles, ActionBatcher, Viewport, Terrain, MouseState};
+use crate::ecs::system::{VelocitySystem, SystemWrapper, DecalSystem, AnimationSystem, UnitSelectionSystem, OccupiedTileSystem, CameraPositionSystem, MoveToPositionActionSystem, UnitActionSystem, GridSystem, CameraInputSystem};
+use crate::media::MediaRef;
+use crate::partition::GridPartition;
+use crate::resource::ShapeMetadataStoreRef;
+use crate::scn;
 use specs;
 use std::collections::HashMap;
 use super::component::{DecalComponent, UnitComponent, OnScreenComponent, CameraComponent, MoveToPositionActionComponent, TransformComponent, GraphicComponent, ActionQueueComponent, VelocityComponent, SelectedUnitComponent};

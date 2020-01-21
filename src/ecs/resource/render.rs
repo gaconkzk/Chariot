@@ -19,8 +19,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use media::Renderer;
-use resource::{RenderCommand, ShapeManager};
+use crate::media::Renderer;
+use crate::resource::{RenderCommand, ShapeManager};
 
 pub struct RenderCommands {
     commands: Vec<RenderCommand>,

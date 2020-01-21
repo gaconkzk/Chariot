@@ -19,8 +19,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use identifier::{PlayerColorId, SlpFileId};
-use resource::DrsKey;
+use crate::identifier::{PlayerColorId, SlpFileId};
+use crate::resource::DrsKey;
 use specs;
 use types::Fixed;
 

@@ -19,10 +19,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use ecs::resource::Terrain;
-use ecs::resource::Viewport;
+use crate::ecs::resource::{Terrain, Viewport};
 use nalgebra::Vector2;
-use types::{Fixed, Rect, Vector3};
+use crate::types::{Fixed, Rect, Vector3};
 
 /// Resource for converting world coordinates to/from screen coordinates
 pub struct ViewProjector {
@@ -102,11 +101,11 @@ impl ViewProjector {
 
 #[cfg(test)]
 mod tests {
-    use dat::{EmpiresDb, EmpiresDbRef};
-    use ecs::resource::{Terrain, Tile};
+    use crate::dat::{EmpiresDb, EmpiresDbRef};
+    use crate::ecs::resource::{Terrain, Tile};
     use nalgebra::Vector2;
     use super::ViewProjector;
-    use types::Vector3;
+    use crate::types::Vector3;
 
     #[test]
     fn test_project_z() {

@@ -19,14 +19,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use dat;
-use identifier::{TerrainBorderId, TerrainId};
-use scn;
+use crate::dat;
+use crate::identifier::{TerrainBorderId, TerrainId};
+use crate::scn;
 use std::cmp;
 use super::border::BorderMatrix;
 use super::dir;
 use super::elevation::ElevationMatrix;
-use types::Vector3;
+use crate::types::Vector3;
 
 #[derive(Debug, Copy, Clone)]
 pub struct Tile {
