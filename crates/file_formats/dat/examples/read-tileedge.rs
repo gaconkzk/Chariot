@@ -44,7 +44,7 @@ fn main() {
         },
         Err(err) => {
             println!("Failed to read tileedge.dat: {}", err);
-            println!("{desc:>2}", desc=err.cause().unwrap().description());
+            println!("{desc:>2}", desc=err.source().unwrap().description());
         }
     }
 }

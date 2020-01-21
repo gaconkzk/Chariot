@@ -18,23 +18,17 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-
-use std::io;
-use std::string;
+//
 
 error_chain! {
     types {
         Error, ErrorKind, ChainErr, Result;
     }
-
-    links {
-    }
-
     foreign_links {
-        io::Error, IoError;
-        string::FromUtf16Error, FromUtf16Error;
+        Io(::std::io::Error);
+        Utf8(::std::string::FromUtf8Error);
+        Utf16(::std::string::FromUtf16Error);
     }
-
     errors {
         InvalidPeMagic {
             display("invalid PE magic")

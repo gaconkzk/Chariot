@@ -19,14 +19,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use error::{ErrorKind, Result};
+use crate::error::{ErrorKind, Result};
 
 use identifier::{CivilizationId, PlayerId};
 use chariot_io_tools::{ReadExt, ReadArrayExt};
-use map::Map;
-use player_data::PlayerData;
-use player_resources::PlayerResources;
-use player_unit::PlayerUnit;
+use crate::map::Map;
+use crate::player_data::PlayerData;
+use crate::player_resources::PlayerResources;
+use crate::player_unit::PlayerUnit;
 use std::fs::File;
 
 use std::io;
@@ -69,25 +69,25 @@ impl Scenario {
     // TODO: Implement writing
 
     pub fn read_from_file<P: AsRef<Path>>(file_name: P) -> Result<Scenario> {
-        Scenario::read_from_stream(try!(File::open(file_name.as_ref())))
+        Scenario::read_from_stream(File::open(file_name.as_ref())?)
     }
 
     pub fn read_from_stream<S: Read + Seek>(mut stream: S) -> Result<Scenario> {
         let mut scenario: Scenario = Default::default();
-        scenario.header = try!(ScenarioHeader::read_from_stream(&mut stream));
+        scenario.header = ScenarioHeader::read_from_stream(&mut stream)?;
 
-        let mut stream = io::Cursor::new(try!(stream.read_and_decompress()));
+        let mut stream = io::Cursor::new(stream.read_and_decompress()?);
 
-        let _next_unit_id = try!(stream.read_u32()); // not sure what this is for yet
-        scenario.player_data = try!(PlayerData::read_from_stream(&mut stream));
-        scenario.map = try!(Map::read_from_stream(&mut stream));
+        let _next_unit_id = stream.read_u32()?; // not sure what this is for yet
+        scenario.player_data = PlayerData::read_from_stream(&mut stream)?;
+        scenario.map = Map::read_from_stream(&mut stream)?;
 
-        let player_unit_group_count = try!(stream.read_u32()) as isize;
-        scenario.player_resources = try!(PlayerResources::read_from_stream(&mut stream));
+        let player_unit_group_count = stream.read_u32()? as isize;
+        scenario.player_resources = PlayerResources::read_from_stream(&mut stream)?;
 
         for _player_index in 0..player_unit_group_count {
-            let unit_count = try!(stream.read_u32()) as usize;
-            let units = try!(stream.read_array(unit_count, |s| PlayerUnit::read_from_stream(s)));
+            let unit_count = stream.read_u32()? as usize;
+            let units = stream.read_array(unit_count, |s| PlayerUnit::read_from_stream(s))?;
             scenario.player_units.push(units);
         }
 
@@ -116,24 +116,24 @@ impl ScenarioHeader {
 
     fn read_from_stream<S: Read + Seek>(stream: &mut S) -> Result<ScenarioHeader> {
         let mut header: ScenarioHeader = Default::default();
-        header.version = try!(stream.read_sized_str(4));
+        header.version = stream.read_sized_str(4)?;
         if header.version != "1.11" {
             return Err(ErrorKind::UnrecognizedScenarioVersion.into());
         }
 
-        header.length = try!(stream.read_u32());
-        header.save_type = try!(stream.read_i32());
-        header.last_save_time = try!(stream.read_u32());
+        header.length = stream.read_u32()?;
+        header.save_type = stream.read_i32()?;
+        header.last_save_time = stream.read_u32()?;
         header.instructions = {
-            let length = try!(stream.read_u32()) as usize;
+            let length = stream.read_u32()? as usize;
             if length > REASONABLE_INSTRUCTION_LIMIT {
                 // Refuse to load too many instructions
                 return Err(ErrorKind::InstructionsTooLarge.into());
             }
-            try!(stream.read_sized_str(length))
+            stream.read_sized_str(length)?
         };
-        header.victory_type = try!(stream.read_u32());
-        header.player_count = try!(stream.read_u32());
+        header.victory_type = stream.read_u32()?;
+        header.player_count = stream.read_u32()?;
         Ok(header)
     }
 }

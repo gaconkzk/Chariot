@@ -19,7 +19,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use error::{Result, ErrorKind};
+use crate::error::{Result, ErrorKind};
 
 use chariot_io_tools::{ReadExt, ReadArrayExt};
 
@@ -41,50 +41,50 @@ impl Language {
 
     pub fn read_from_file<P: AsRef<Path>>(file_name: P) -> Result<Language> {
         let file_name = file_name.as_ref();
-        let mut file = try!(File::open(file_name));
+        let mut file = File::open(file_name)?;
         Language::read_from_stream(&mut file)
     }
 
     pub fn read_from_stream<S: Read + Seek>(stream: &mut S) -> Result<Language> {
-        try!(move_to_pe_header(stream));
-        let pe_header = try!(read_pe_header(stream));
+        move_to_pe_header(stream)?;
+        let pe_header = read_pe_header(stream)?;
 
-        let data_directories = try!(read_pe_image_data_directories(stream));
+        let data_directories = read_pe_image_data_directories(stream)?;
         let resource_data_directory = &data_directories[DATA_DIRECTORY_RESOURCE_INDEX];
 
-        let resource_section = try!(read_pe_image_resource_section_header(pe_header.section_count,
+        let resource_section = read_pe_image_resource_section_header(pe_header.section_count,
                                                                           resource_data_directory,
-                                                                          stream));
+                                                                          stream)?;
 
         let resource_root_offset = resource_section.raw_data_offset as u64;
-        let string_directory = try!(read_pe_string_resource_directory(stream, resource_root_offset));
+        let string_directory = read_pe_string_resource_directory(stream, resource_root_offset)?;
         let string_entry_map =
-            try!(read_pe_string_resource_entries(stream, resource_root_offset, &string_directory));
+            read_pe_string_resource_entries(stream, resource_root_offset, &string_directory)?;
 
         let mut language = Language::new();
         for (dir_id, string_entries) in &string_entry_map {
             for string_entry in string_entries {
                 let data_entry =
-                    try!(read_pe_resource_data_entry(stream, resource_root_offset, string_entry));
+                    read_pe_resource_data_entry(stream, resource_root_offset, string_entry)?;
                 let start_pos = resource_root_offset +
                                 (data_entry.data_offset - resource_section.virtual_address) as u64;
                 let end_pos = start_pos + data_entry.size as u64;
 
-                try!(stream.seek(SeekFrom::Start(start_pos)));
+                stream.seek(SeekFrom::Start(start_pos))?;
                 let mut string_id = ((dir_id - 1) * 16) as usize;
                 loop {
-                    let pos = try!(stream.seek(SeekFrom::Current(0)));
+                    let pos = stream.seek(SeekFrom::Current(0))?;
                     if pos >= end_pos {
                         break;
                     }
 
-                    let len = try!(stream.read_u16());
+                    let len = stream.read_u16()?;
                     if len > 0 {
                         let mut words = Vec::new();
                         for _ in 0..len {
-                            words.push(try!(stream.read_u16()));
+                            words.push(stream.read_u16()?);
                         }
-                        let text = try!(String::from_utf16(&words));
+                        let text = String::from_utf16(&words)?;
                         language.strings.insert(string_id, text);
                     }
                     string_id += 1;
@@ -166,45 +166,45 @@ struct PeImageResourceDataEntry {
 }
 
 fn move_to_pe_header<S: Read + Seek>(stream: &mut S) -> Result<()> {
-    try!(stream.seek(SeekFrom::Start(0)));
-    let mz_magic = try!(stream.read_sized_str(2));
+    stream.seek(SeekFrom::Start(0))?;
+    let mz_magic = stream.read_sized_str(2)?;
     if mz_magic != "MZ" {
         return Err(ErrorKind::InvalidPeMagic.into());
     }
 
-    try!(stream.seek(SeekFrom::Start(NEW_EXE_HEADER_ADDRESS_OFFSET)));
+    stream.seek(SeekFrom::Start(NEW_EXE_HEADER_ADDRESS_OFFSET))?;
 
-    let pe_header_offset = try!(stream.read_u32()) as u64;
-    try!(stream.seek(SeekFrom::Start(pe_header_offset)));
+    let pe_header_offset = stream.read_u32()? as u64;
+    stream.seek(SeekFrom::Start(pe_header_offset))?;
     Ok(())
 }
 
 fn read_pe_header<S: Read + Seek>(stream: &mut S) -> Result<PeImageHeader> {
-    let pe_magic = try!(stream.read_sized_str(2));
+    let pe_magic = stream.read_sized_str(2)?;
     if pe_magic != "PE" {
         return Err(ErrorKind::InvalidPeMagic.into());
     }
-    try!(stream.seek(SeekFrom::Current(2)));
+    stream.seek(SeekFrom::Current(2))?;
 
     Ok(PeImageHeader {
-        machine: try!(stream.read_u16()),
-        section_count: try!(stream.read_u16()),
-        timestamp: try!(stream.read_u32()),
-        symbol_table_offset: try!(stream.read_u32()),
-        symbol_count: try!(stream.read_u32()),
-        optional_header_size: try!(stream.read_u16()),
-        characteristics: try!(stream.read_u16()),
+        machine: stream.read_u16()?,
+        section_count: stream.read_u16()?,
+        timestamp: stream.read_u32()?,
+        symbol_table_offset: stream.read_u32()?,
+        symbol_count: stream.read_u32()?,
+        optional_header_size: stream.read_u16()?,
+        characteristics: stream.read_u16()?,
     })
 }
 
 fn read_pe_image_data_directories<S: Read + Seek>(stream: &mut S) -> Result<PeImageDataDirectories> {
-    try!(stream.seek(SeekFrom::Current(DATA_DIRECTORY_OFFSET_FROM_OPTIONAL_HEADER)));
+    stream.seek(SeekFrom::Current(DATA_DIRECTORY_OFFSET_FROM_OPTIONAL_HEADER))?;
 
     let mut directories = Vec::new();
     for _ in 0..DATA_DIRECTORY_COUNT {
         directories.push(PeImageDataDirectory {
-            virtual_address: try!(stream.read_u32()),
-            size: try!(stream.read_u32()),
+            virtual_address: stream.read_u32()?,
+            size: stream.read_u32()?,
         });
     }
 
@@ -219,16 +219,16 @@ fn read_pe_image_section_headers<S: Read + Seek>(section_count: u16,
 
 fn read_pe_image_section_header<S: Read + Seek>(stream: &mut S) -> Result<PeImageSectionHeader> {
     Ok(PeImageSectionHeader {
-        name: try!(stream.read_sized_str(8)),
-        physical_address: try!(stream.read_u32()),
-        virtual_address: try!(stream.read_u32()),
-        raw_data_size: try!(stream.read_u32()),
-        raw_data_offset: try!(stream.read_u32()),
-        relocations_offset: try!(stream.read_u32()),
-        line_numbers_offset: try!(stream.read_u32()),
-        relocation_count: try!(stream.read_u16()),
-        line_number_count: try!(stream.read_u16()),
-        characteristics: try!(stream.read_u32()),
+        name: stream.read_sized_str(8)?,
+        physical_address: stream.read_u32()?,
+        virtual_address: stream.read_u32()?,
+        raw_data_size: stream.read_u32()?,
+        raw_data_offset: stream.read_u32()?,
+        relocations_offset: stream.read_u32()?,
+        line_numbers_offset: stream.read_u32()?,
+        relocation_count: stream.read_u16()?,
+        line_number_count: stream.read_u16()?,
+        characteristics: stream.read_u32()?,
     })
 }
 
@@ -236,7 +236,7 @@ fn read_pe_image_resource_section_header<S: Read + Seek>(section_count: u16,
                                                          resource_data_directory: &PeImageDataDirectory,
                                                          stream: &mut S)
                                                          -> Result<PeImageSectionHeader> {
-    let sections = try!(read_pe_image_section_headers(section_count, stream));
+    let sections = read_pe_image_section_headers(section_count, stream)?;
     let resource_section = sections.into_iter().find(&|section: &PeImageSectionHeader| {
         section.virtual_address == resource_data_directory.virtual_address
     });
@@ -248,12 +248,12 @@ fn read_pe_image_resource_section_header<S: Read + Seek>(section_count: u16,
 
 fn read_pe_resource_directories<S: Read + Seek>(stream: &mut S) -> Result<PeImageResourceDirectory> {
     let mut directory = PeImageResourceDirectory {
-        characteristics: try!(stream.read_u32()),
-        timestamp: try!(stream.read_u32()),
-        major_version: try!(stream.read_u16()),
-        minor_version: try!(stream.read_u16()),
-        named_entry_count: try!(stream.read_u16()),
-        id_entry_count: try!(stream.read_u16()),
+        characteristics: stream.read_u32()?,
+        timestamp: stream.read_u32()?,
+        major_version: stream.read_u16()?,
+        minor_version: stream.read_u16()?,
+        named_entry_count: stream.read_u16()?,
+        id_entry_count: stream.read_u16()?,
         entries: Vec::new(),
     };
 
@@ -262,10 +262,10 @@ fn read_pe_resource_directories<S: Read + Seek>(stream: &mut S) -> Result<PeImag
 
     for _ in 0..(directory.id_entry_count as usize) {
         directory.entries.push(PeImageResourceDirectoryEntry {
-            name: try!(stream.read_u32()),
+            name: stream.read_u32()?,
             // Clear the high bit that indicates the next level is a sub directory
             // We'll just assume it is
-            data_offset: try!(stream.read_u32()) & 0x7FFFFFFF,
+            data_offset: (stream.read_u32()?) & 0x7FFFFFFF,
         });
     }
 
@@ -275,9 +275,9 @@ fn read_pe_resource_directories<S: Read + Seek>(stream: &mut S) -> Result<PeImag
 fn read_pe_string_resource_directory<S: Read + Seek>(stream: &mut S,
                                                      resource_root_offset: u64)
                                                      -> Result<PeImageResourceDirectoryEntry> {
-    try!(stream.seek(SeekFrom::Start(resource_root_offset)));
+    stream.seek(SeekFrom::Start(resource_root_offset))?;
 
-    let resource_directories = try!(read_pe_resource_directories(stream));
+    let resource_directories = read_pe_resource_directories(stream)?;
     let string_directory = resource_directories.entries
         .into_iter()
         .find(&|dir: &PeImageResourceDirectoryEntry| dir.name == RESOURCE_TYPE_STRING);
@@ -294,14 +294,14 @@ fn read_pe_string_resource_entries<S: Read + Seek>
      -> Result<BTreeMap<u32, Vec<PeImageResourceDirectoryEntry>>> {
     // Seek to the string sub directory
     let string_subdir_rel_offset = string_directory.data_offset as u64;
-    try!(stream.seek(SeekFrom::Start(resource_root_offset + string_subdir_rel_offset)));
+    stream.seek(SeekFrom::Start(resource_root_offset + string_subdir_rel_offset))?;
 
     let mut string_entry_map: BTreeMap<u32, Vec<PeImageResourceDirectoryEntry>> = BTreeMap::new();
-    let sub_directories = try!(read_pe_resource_directories(stream));
+    let sub_directories = read_pe_resource_directories(stream)?;
     for sub_dir in &sub_directories.entries {
         // Seek to the sub directory's data
-        try!(stream.seek(SeekFrom::Start(resource_root_offset + sub_dir.data_offset as u64)));
-        let language_dir_entries = try!(read_pe_resource_directories(stream));
+        stream.seek(SeekFrom::Start(resource_root_offset + sub_dir.data_offset as u64))?;
+        let language_dir_entries = read_pe_resource_directories(stream)?;
         if string_entry_map.get(&sub_dir.name).is_some() {
             string_entry_map.get_mut(&sub_dir.name).unwrap().extend(language_dir_entries.entries);
         } else {
@@ -317,11 +317,11 @@ fn read_pe_resource_data_entry<S: Read + Seek>(stream: &mut S,
                                                resource_root_offset: u64,
                                                string_entry: &PeImageResourceDirectoryEntry)
                                                -> Result<PeImageResourceDataEntry> {
-    try!(stream.seek(SeekFrom::Start(resource_root_offset + string_entry.data_offset as u64)));
+    stream.seek(SeekFrom::Start(resource_root_offset + string_entry.data_offset as u64))?;
     Ok(PeImageResourceDataEntry {
-        data_offset: try!(stream.read_u32()),
-        size: try!(stream.read_u32()),
-        code_page: try!(stream.read_u32()),
-        reserved: try!(stream.read_u32()),
+        data_offset: stream.read_u32()?,
+        size: stream.read_u32()?,
+        code_page: stream.read_u32()?,
+        reserved: stream.read_u32()?,
     })
 }

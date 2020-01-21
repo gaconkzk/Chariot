@@ -20,7 +20,7 @@
 // SOFTWARE.
 //
 
-use error::Result;
+use crate::error::Result;
 
 use identifier::{TerrainId, UnitTerrainRestrictionId};
 use chariot_io_tools::{ReadExt, ReadArrayExt};
@@ -65,7 +65,7 @@ pub fn read_terrain_restrictions<R: Read + Seek>(stream: &mut R,
 fn read_terrain_restriction<R: Read>(stream: &mut R, terrain_count: usize) -> Result<TerrainRestriction> {
     let mut restriction: TerrainRestriction = Default::default();
 
-    restriction.passability_map = try!(stream.read_array(terrain_count, |c| c.read_f32()));
+    restriction.passability_map = stream.read_array(terrain_count, |c| c.read_f32())?;
 
     Ok(restriction)
 }

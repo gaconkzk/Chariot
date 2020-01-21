@@ -1,5 +1,6 @@
 [package]
 name = "chariot_language"
+edition = "2018"
 description = """
     A library for reading text out of Age of Empires (1997) language.dll files
 """

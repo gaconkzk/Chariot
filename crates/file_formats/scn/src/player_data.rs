@@ -19,7 +19,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use error::Result;
+use crate::error::Result;
 use identifier::CivilizationId;
 
 use chariot_io_tools::{ReadArrayExt, ReadExt};
@@ -131,50 +131,50 @@ impl PlayerData {
 
     pub fn read_from_stream<S: Read + Seek>(stream: &mut S) -> Result<PlayerData> {
         let mut data: PlayerData = Default::default();
-        data.version = try!(stream.read_f32());
-        data.player_names = try!(stream.read_array(16, |s| s.read_sized_str(256)));
-        data.player_civs = try!(stream.read_array(16, |s| read_civilization(s)));
-        data.conquest_victory = try!(stream.read_u8()) != 0;
+        data.version = stream.read_f32()?;
+        data.player_names = stream.read_array(16, |s| s.read_sized_str(256))?;
+        data.player_civs = stream.read_array(16, |s| read_civilization(s))?;
+        data.conquest_victory = (stream.read_u8()?) != 0;
 
         data.unknown1 = vec![0u8; PLAYER_DATA_UNKNOWN_1_LENGTH];
-        try!(stream.read_exact(&mut data.unknown1));
+        stream.read_exact(&mut data.unknown1)?;
 
-        data.original_file_name = try!(read_pascal_string(stream));
-        data.instructions = try!(read_pascal_string(stream));
-        data.hints = try!(read_pascal_string(stream));
-        data.victory = try!(read_pascal_string(stream));
-        data.loss = try!(read_pascal_string(stream));
-        data.history = try!(read_pascal_string(stream));
+        data.original_file_name = read_pascal_string(stream)?;
+        data.instructions = read_pascal_string(stream)?;
+        data.hints = read_pascal_string(stream)?;
+        data.victory = read_pascal_string(stream)?;
+        data.loss = read_pascal_string(stream)?;
+        data.history = read_pascal_string(stream)?;
 
-        data.pre_game_cinematic_file_name = try!(read_pascal_string(stream));
-        data.victory_cinematic_file_name = try!(read_pascal_string(stream));
-        data.loss_cinematic_file_name = try!(read_pascal_string(stream));
-        data.background_file_name = try!(read_pascal_string(stream));
+        data.pre_game_cinematic_file_name = read_pascal_string(stream)?;
+        data.victory_cinematic_file_name = read_pascal_string(stream)?;
+        data.loss_cinematic_file_name = read_pascal_string(stream)?;
+        data.background_file_name = read_pascal_string(stream)?;
 
-        data.preview_thumbnail = try!(read_preview_thumbnail(stream));
+        data.preview_thumbnail = read_preview_thumbnail(stream)?;
 
-        data.ai_names = try!(stream.read_array(16, |s| read_pascal_string(s)));
-        data.city_names = try!(stream.read_array(16, |s| read_pascal_string(s)));
-        data.personality_names = try!(stream.read_array(16, |s| read_pascal_string(s)));
-        data.ai_script_configs = try!(stream.read_array(16, |s| read_ai_script_config(s)));
-        data.ai_types = try!(stream.read_array(4, |s| s.read_u8()));
+        data.ai_names = stream.read_array(16, |s| read_pascal_string(s))?;
+        data.city_names = stream.read_array(16, |s| read_pascal_string(s))?;
+        data.personality_names = stream.read_array(16, |s| read_pascal_string(s))?;
+        data.ai_script_configs = stream.read_array(16, |s| read_ai_script_config(s))?;
+        data.ai_types = stream.read_array(4, |s| s.read_u8())?;
 
-        data.player_starting_resources = try!(stream.read_array(16, |s| read_player_starting_resources(s)));
-        try!(stream.read_i32()); // separator (-1)
+        data.player_starting_resources = stream.read_array(16, |s| read_player_starting_resources(s))?;
+        stream.read_i32()?; // separator (-1)
 
-        data.victory_conditions = try!(read_victory_conditions(stream));
-        data.diplomacy = try!(read_diplomacy(stream));
-        try!(stream.read_i32()); // separator (-1)
+        data.victory_conditions = read_victory_conditions(stream)?;
+        data.diplomacy = read_diplomacy(stream)?;
+        stream.read_i32()?; // separator (-1)
 
-        data.allied_victory = try!(stream.read_array(16, |s| s.read_u32()));
-        data.disabled_research_ids = try!(stream.read_array(16, |s| s.read_array(20, |s2| s2.read_u32())));
+        data.allied_victory = stream.read_array(16, |s| s.read_u32())?;
+        data.disabled_research_ids = stream.read_array(16, |s| s.read_array(20, |s2| s2.read_u32()))?;
 
-        data.unused1 = try!(stream.read_u32());
-        data.unused2 = try!(stream.read_u32());
+        data.unused1 = stream.read_u32()?;
+        data.unused2 = stream.read_u32()?;
 
-        data.all_techs = try!(stream.read_u32()) != 0;
-        data.starting_ages = try!(stream.read_array(16, |s| s.read_u32()));
-        try!(stream.read_i32()); // separator (-1)
+        data.all_techs = stream.read_u32()? != 0;
+        data.starting_ages = stream.read_array(16, |s| s.read_u32())?;
+        stream.read_i32()?; // separator (-1)
 
         Ok(data)
     }
@@ -182,82 +182,82 @@ impl PlayerData {
 
 fn read_civilization<S: Read + Seek>(stream: &mut S) -> Result<PlayerCivilization> {
     Ok(PlayerCivilization {
-        state: try!(stream.read_u32()),
-        type_id: try!(stream.read_u32()),
-        civilization_id: required_id!(try!(stream.read_i32())),
-        unknown1: try!(stream.read_u32()),
+        state: stream.read_u32()?,
+        type_id: stream.read_u32()?,
+        civilization_id: required_id!(stream.read_i32()?),
+        unknown1: stream.read_u32()?,
     })
 }
 
 fn read_preview_thumbnail<S: Read + Seek>(stream: &mut S) -> Result<PreviewThumbnail> {
     let mut thumb: PreviewThumbnail = Default::default();
-    thumb.included = try!(stream.read_u32()) != 0;
-    thumb.width = try!(stream.read_u32());
-    thumb.height = try!(stream.read_u32());
+    thumb.included = stream.read_u32()? != 0;
+    thumb.width = stream.read_u32()?;
+    thumb.height = stream.read_u32()?;
 
     if thumb.included {
         thumb.unknown1 = vec![0u8; THUMBNAIL_UNKNOWN_1_LENGTH];
-        try!(stream.read_exact(&mut thumb.unknown1));
+        stream.read_exact(&mut thumb.unknown1)?;
 
-        thumb.pixel_data_length = try!(stream.read_u32()) - 40;
+        thumb.pixel_data_length = stream.read_u32()? - 40;
 
         thumb.unknown2 = vec![0u8; THUMBNAIL_UNKNOWN_2_LENGTH];
-        try!(stream.read_exact(&mut thumb.unknown2));
+        stream.read_exact(&mut thumb.unknown2)?;
 
         thumb.pixel_data = vec![0u8; thumb.pixel_data_length as usize];
-        try!(stream.read_exact(&mut thumb.pixel_data));
+        stream.read_exact(&mut thumb.pixel_data)?;
     } else {
         thumb.unknown1 = vec![0u8; 2];
-        try!(stream.read_exact(&mut thumb.unknown1));
+        stream.read_exact(&mut thumb.unknown1)?;
     }
 
     Ok(thumb)
 }
 
 fn read_ai_script_config<S: Read>(stream: &mut S) -> Result<AiScriptConfig> {
-    let ai_len = try!(stream.read_u32()) as usize;
-    let city_len = try!(stream.read_u32()) as usize;
-    let per_len = try!(stream.read_u32()) as usize;
+    let ai_len = stream.read_u32()? as usize;
+    let city_len = stream.read_u32()? as usize;
+    let per_len = stream.read_u32()? as usize;
 
     Ok(AiScriptConfig {
-        ai_file_name: try!(stream.read_sized_str(ai_len)),
-        city_file_name: try!(stream.read_sized_str(city_len)),
-        personality_file_name: try!(stream.read_sized_str(per_len)),
+        ai_file_name: stream.read_sized_str(ai_len)?,
+        city_file_name: stream.read_sized_str(city_len)?,
+        personality_file_name: stream.read_sized_str(per_len)?,
     })
 }
 
 fn read_player_starting_resources<S: Read>(stream: &mut S) -> Result<PlayerStartingResources> {
     Ok(PlayerStartingResources {
-        gold: try!(stream.read_u32()),
-        wood: try!(stream.read_u32()),
-        food: try!(stream.read_u32()),
-        stone: try!(stream.read_u32()),
+        gold: stream.read_u32()?,
+        wood: stream.read_u32()?,
+        food: stream.read_u32()?,
+        stone: stream.read_u32()?,
     })
 }
 
 fn read_victory_conditions<S: Read>(stream: &mut S) -> Result<VictoryConditions> {
     Ok(VictoryConditions {
-        conquest_required: try!(stream.read_u32()) != 0,
-        unused1: try!(stream.read_u32()),
-        required_relic_count: try!(stream.read_u32()),
-        unused2: try!(stream.read_u32()),
-        required_exploration_percent: try!(stream.read_u32()),
-        unused3: try!(stream.read_u32()),
-        all_conditions_required: try!(stream.read_u32()) != 0,
-        victory_mode: try!(stream.read_u32()),
-        score_required: try!(stream.read_u32()),
-        timed_game_time: try!(stream.read_u32()),
+        conquest_required: stream.read_u32()? != 0,
+        unused1: stream.read_u32()?,
+        required_relic_count: stream.read_u32()?,
+        unused2: stream.read_u32()?,
+        required_exploration_percent: stream.read_u32()?,
+        unused3: stream.read_u32()?,
+        all_conditions_required: stream.read_u32()? != 0,
+        victory_mode: stream.read_u32()?,
+        score_required: stream.read_u32()?,
+        timed_game_time: stream.read_u32()?,
     })
 }
 
 fn read_diplomacy<S: Read>(stream: &mut S) -> Result<Diplomacy> {
     Ok(Diplomacy {
-        stances: try!(stream.read_array(16, |s| s.read_array(16, |s2| s2.read_u32()))),
-        individual_victory: try!(stream.read_array(16, |s| s.read_array(180, |s2| s2.read_u32()))),
+        stances: stream.read_array(16, |s| s.read_array(16, |s2| s2.read_u32()))?,
+        individual_victory: stream.read_array(16, |s| s.read_array(180, |s2| s2.read_u32()))?,
     })
 }
 
 fn read_pascal_string<S: Read>(stream: &mut S) -> Result<String> {
-    let length = try!(stream.read_u16()) as usize;
-    Ok(try!(stream.read_sized_str(length)))
+    let length = stream.read_u16()? as usize;
+    Ok(stream.read_sized_str(length)?)
 }

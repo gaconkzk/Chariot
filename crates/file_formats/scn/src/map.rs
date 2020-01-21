@@ -20,7 +20,7 @@
 // SOFTWARE.
 //
 
-use error::Result;
+use crate::error::Result;
 
 use identifier::TerrainId;
 use chariot_io_tools::{ReadArrayExt, ReadExt};
@@ -44,19 +44,19 @@ pub struct MapTile {
 impl Map {
     pub fn read_from_stream<S: Read>(stream: &mut S) -> Result<Map> {
         let mut map = Map {
-            width: try!(stream.read_u32()),
-            height: try!(stream.read_u32()),
+            width: stream.read_u32()?,
+            height: stream.read_u32()?,
             tiles: Default::default(),
         };
-        map.tiles = try!(stream.read_array((map.width * map.height) as usize, |s| read_map_tile(s)));
+        map.tiles = stream.read_array((map.width * map.height) as usize, |s| read_map_tile(s))?;
         Ok(map)
     }
 }
 
 fn read_map_tile<S: Read>(stream: &mut S) -> Result<MapTile> {
     Ok(MapTile {
-        terrain_id: required_id!(try!(stream.read_i8())),
-        elevation: try!(stream.read_u8()),
-        unused: try!(stream.read_u8()),
+        terrain_id: required_id!(stream.read_i8()?),
+        elevation: stream.read_u8()?,
+        unused: stream.read_u8()?,
     })
 }

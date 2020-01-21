@@ -19,7 +19,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use error::Result;
+use crate::error::Result;
 use identifier::PlayerId;
 
 use chariot_io_tools::{ReadArrayExt, ReadExt};
@@ -39,7 +39,7 @@ impl PlayerResources {
     // TODO: Implement writing
 
     pub fn read_from_stream<S: Read>(stream: &mut S) -> Result<Vec<PlayerResources>> {
-        let mut resources = try!(stream.read_array(8, |s| read_single_from_stream(s)));
+        let mut resources = stream.read_array(8, |s| read_single_from_stream(s))?;
         for (index, mut resource) in resources.iter_mut().enumerate() {
             resource.player_id = index.into();
         }
@@ -49,9 +49,9 @@ impl PlayerResources {
 
 fn read_single_from_stream<S: Read>(stream: &mut S) -> Result<PlayerResources> {
     let mut data: PlayerResources = Default::default();
-    data.food = try!(stream.read_f32());
-    data.wood = try!(stream.read_f32());
-    data.gold = try!(stream.read_f32());
-    data.stone = try!(stream.read_f32());
+    data.food = stream.read_f32()?;
+    data.wood = stream.read_f32()?;
+    data.gold = stream.read_f32()?;
+    data.stone = stream.read_f32()?;
     Ok(data)
 }

@@ -20,8 +20,8 @@
 // SOFTWARE.
 //
 
-use empires::resource::{ResourceCost, ReadResourceCost};
-use error::{Result, ErrorKind};
+use super::resource::{ResourceCost};
+use crate::error::{Result, ErrorKind};
 
 use identifier::{LocalizationId, UnitCommandId, SoundGroupId, GraphicId, TerrainId, UnitId, ResearchId, UnitTerrainRestrictionId};
 use chariot_io_tools::{ReadExt, ReadArrayExt};
@@ -368,107 +368,107 @@ pub struct Unit {
 pub fn read_unit<R: Read + Seek>(stream: &mut R) -> Result<Unit> {
     let mut unit: Unit = Default::default();
 
-    unit.unit_type = try!(UnitType::from_u8(try!(stream.read_u8())));
-    let name_length = try!(stream.read_u16()) as usize;
-    unit.id = required_id!(try!(stream.read_i16()));
-    unit.name_id = optional_id!(try!(stream.read_i16()));
-    unit.creation_id = required_id!(try!(stream.read_i16()));
-    unit.class_id = try!(stream.read_i16());
-    unit.standing_graphic = optional_id!(try!(stream.read_i16()));
-    unit.dying_graphic = optional_id!(try!(stream.read_i16()));
-    try!(stream.read_i16()); // unused (dying graphic 2)
-    unit.death_mode = try!(stream.read_i8());
-    unit.hit_points = try!(stream.read_i16());
-    unit.line_of_sight = try!(stream.read_f32());
-    unit.garrison_capability = try!(stream.read_i8());
-    unit.collision_size_x = try!(stream.read_f32());
-    unit.collision_size_y = try!(stream.read_f32());
-    unit.collision_size_z = try!(stream.read_f32());
-    unit.train_sound_id = optional_id!(try!(stream.read_i16()));
-    unit.dead_unit_id = optional_id!(try!(stream.read_i16()));
-    unit.placement_mode = try!(stream.read_i8());
-    unit.air_mode = try!(stream.read_u8()) != 0;
-    unit.icon_id = try!(stream.read_i16());
-    unit.hide_in_editor = try!(stream.read_u8()) != 0;
-    try!(stream.read_u16()); // unknown
-    unit.enabled = try!(stream.read_u8()) != 0;
+    unit.unit_type = UnitType::from_u8(stream.read_u8()?)?;
+    let name_length = stream.read_u16()? as usize;
+    unit.id = required_id!(stream.read_i16()?);
+    unit.name_id = optional_id!(stream.read_i16()?);
+    unit.creation_id = required_id!(stream.read_i16()?);
+    unit.class_id = stream.read_i16()?;
+    unit.standing_graphic = optional_id!(stream.read_i16()?);
+    unit.dying_graphic = optional_id!(stream.read_i16()?);
+    stream.read_i16()?; // unused (dying graphic 2)
+    unit.death_mode = stream.read_i8()?;
+    unit.hit_points = stream.read_i16()?;
+    unit.line_of_sight = stream.read_f32()?;
+    unit.garrison_capability = stream.read_i8()?;
+    unit.collision_size_x = stream.read_f32()?;
+    unit.collision_size_y = stream.read_f32()?;
+    unit.collision_size_z = stream.read_f32()?;
+    unit.train_sound_id = optional_id!(stream.read_i16()?);
+    unit.dead_unit_id = optional_id!(stream.read_i16()?);
+    unit.placement_mode = stream.read_i8()?;
+    unit.air_mode = stream.read_u8()? != 0;
+    unit.icon_id = stream.read_i16()?;
+    unit.hide_in_editor = stream.read_u8()? != 0;
+    stream.read_u16()?; // unknown
+    unit.enabled = stream.read_u8()? != 0;
 
-    unit.placement_side_terrain_ids[0] = optional_id!(try!(stream.read_i16()));
-    unit.placement_side_terrain_ids[1] = optional_id!(try!(stream.read_i16()));
-    unit.placement_terrain_ids[0] = optional_id!(try!(stream.read_i16()));
-    unit.placement_terrain_ids[1] = optional_id!(try!(stream.read_i16()));
-    unit.clearance_size_x = try!(stream.read_f32());
-    unit.clearance_size_y = try!(stream.read_f32());
-    unit.hill_mode = try!(stream.read_i8());
-    unit.visible_in_fog = try!(stream.read_u8()) != 0;
-    unit.terrain_restriction = UnitTerrainRestrictionId::from_index(try!(stream.read_i16()) as usize);
-    unit.fly_mode = try!(stream.read_i8()) != 0;
-    unit.resource_capacity = try!(stream.read_i16());
-    unit.resource_decay = try!(stream.read_f32());
-    unit.blast_defense_level = try!(stream.read_i8());
-    unit.sub_type = try!(stream.read_i8());
-    unit.interaction_mode = try!(InteractionMode::from_u8(try!(stream.read_u8())));
-    unit.minimap_mode = try!(stream.read_i8());
-    unit.command_attribute = try!(stream.read_i8());
-    try!(stream.read_f32()); // unknown
-    unit.minimap_color = try!(stream.read_u8());
-    unit.help_id = optional_id!(try!(stream.read_i32()));
-    unit.hotkey_text_id = optional_id!(try!(stream.read_i32()));
-    unit.hotkey = try!(stream.read_i32());
-    unit.unselectable = try!(stream.read_u8()) != 0;
-    unit.enable_auto_gather = try!(stream.read_u8()) != 0;
-    unit.auto_gather_mode = try!(stream.read_i8());
-    unit.auto_gather_id = try!(stream.read_i8());
+    unit.placement_side_terrain_ids[0] = optional_id!(stream.read_i16()?);
+    unit.placement_side_terrain_ids[1] = optional_id!(stream.read_i16()?);
+    unit.placement_terrain_ids[0] = optional_id!(stream.read_i16()?);
+    unit.placement_terrain_ids[1] = optional_id!(stream.read_i16()?);
+    unit.clearance_size_x = stream.read_f32()?;
+    unit.clearance_size_y = stream.read_f32()?;
+    unit.hill_mode = stream.read_i8()?;
+    unit.visible_in_fog = stream.read_u8()? != 0;
+    unit.terrain_restriction = UnitTerrainRestrictionId::from_index(stream.read_i16()? as usize);
+    unit.fly_mode = stream.read_i8()? != 0;
+    unit.resource_capacity = stream.read_i16()?;
+    unit.resource_decay = stream.read_f32()?;
+    unit.blast_defense_level = stream.read_i8()?;
+    unit.sub_type = stream.read_i8()?;
+    unit.interaction_mode = InteractionMode::from_u8(stream.read_u8()?)?;
+    unit.minimap_mode = stream.read_i8()?;
+    unit.command_attribute = stream.read_i8()?;
+    stream.read_f32()?; // unknown
+    unit.minimap_color = stream.read_u8()?;
+    unit.help_id = optional_id!(stream.read_i32()?);
+    unit.hotkey_text_id = optional_id!(stream.read_i32()?);
+    unit.hotkey = stream.read_i32()?;
+    unit.unselectable = stream.read_u8()? != 0;
+    unit.enable_auto_gather = stream.read_u8()? != 0;
+    unit.auto_gather_mode = stream.read_i8()?;
+    unit.auto_gather_id = stream.read_i8()?;
 
-    unit.selection_effect = try!(stream.read_i8());
-    unit.editor_selection_color = try!(stream.read_u8());
-    unit.selection_shape_size_x = try!(stream.read_f32());
-    unit.selection_shape_size_y = try!(stream.read_f32());
-    unit.selection_shape_size_z = try!(stream.read_f32());
+    unit.selection_effect = stream.read_i8()?;
+    unit.editor_selection_color = stream.read_u8()?;
+    unit.selection_shape_size_x = stream.read_f32()?;
+    unit.selection_shape_size_y = stream.read_f32()?;
+    unit.selection_shape_size_z = stream.read_f32()?;
 
     unit.resource_storage = read_resource_costs!(f32, u8, stream, 3);
 
-    let damage_graphic_count = try!(stream.read_u8()) as usize;
-    unit.damage_graphics = try!(stream.read_array(damage_graphic_count, |c| read_damage_graphic(c)));
+    let damage_graphic_count = stream.read_u8()? as usize;
+    unit.damage_graphics = stream.read_array(damage_graphic_count, |c| read_damage_graphic(c))?;
 
-    unit.selection_sound = try!(stream.read_i16());
-    unit.dying_sound = try!(stream.read_i16());
-    unit.attack_mode = try!(stream.read_i8());
-    try!(stream.read_u8()); // Unknown
+    unit.selection_sound = stream.read_i16()?;
+    unit.dying_sound = stream.read_i16()?;
+    unit.attack_mode = stream.read_i8()?;
+    stream.read_u8()?; // Unknown
 
-    unit.name = try!(stream.read_sized_str(name_length));
-    unit.id2 = try!(stream.read_i16());
+    unit.name = stream.read_sized_str(name_length)?;
+    unit.id2 = stream.read_i16()?;
 
     match unit.unit_type {
         UnitType::Tree | UnitType::GraphicEffect => {
             // No params on these types
             return Ok(unit);
-        }
+        },
         UnitType::Flag |
         UnitType::Unknown25 => {
             // Skip what may be the speed; but on a non-moveable
-            try!(stream.read_f32());
-        }
-        _ => {}
+            stream.read_f32()?;
+        },
+        _ => (),
     }
 
     if unit.unit_type.has_motion_params() {
-        unit.motion_params = Some(try!(read_motion_params(stream)));
+        unit.motion_params = Some(read_motion_params(stream)?);
     }
     if unit.unit_type.has_commandable_params() {
-        unit.commandable_params = Some(try!(read_commandable_params(stream)));
+        unit.commandable_params = Some(read_commandable_params(stream)?);
     }
     if unit.unit_type.has_battle_params() {
-        unit.battle_params = Some(try!(read_battle_params(stream)));
+        unit.battle_params = Some(read_battle_params(stream)?);
     }
     if unit.unit_type.has_projectile_params() {
-        unit.projectile_params = Some(try!(read_projectile_params(stream)));
+        unit.projectile_params = Some(read_projectile_params(stream)?);
     }
     if unit.unit_type.has_trainable_params() {
-        unit.trainable_params = Some(try!(read_trainable_params(stream)));
+        unit.trainable_params = Some(read_trainable_params(stream)?);
     }
     if unit.unit_type.has_building_params() {
-        unit.building_params = Some(try!(read_building_params(stream)));
+        unit.building_params = Some(read_building_params(stream)?);
     }
 
     Ok(unit)
@@ -476,144 +476,144 @@ pub fn read_unit<R: Read + Seek>(stream: &mut R) -> Result<Unit> {
 
 fn read_damage_graphic<R: Read>(stream: &mut R) -> Result<DamageGraphic> {
     let mut damage_graphic: DamageGraphic = Default::default();
-    damage_graphic.graphic_id = required_id!(try!(stream.read_i16()));
-    damage_graphic.damage_percent = try!(stream.read_u8());
-    damage_graphic.old_apply_mode = try!(stream.read_u8());
-    damage_graphic.apply_mode = try!(stream.read_u8());
+    damage_graphic.graphic_id = required_id!(stream.read_i16()?);
+    damage_graphic.damage_percent = stream.read_u8()?;
+    damage_graphic.old_apply_mode = stream.read_u8()?;
+    damage_graphic.apply_mode = stream.read_u8()?;
     Ok(damage_graphic)
 }
 
 fn read_motion_params<R: Read>(stream: &mut R) -> Result<MotionParams> {
     let mut params: MotionParams = Default::default();
-    params.speed = try!(stream.read_f32());
-    params.walking_graphics[0] = optional_id!(try!(stream.read_i16()));
-    params.walking_graphics[1] = optional_id!(try!(stream.read_i16()));
-    params.rotation_speed = try!(stream.read_f32());
-    try!(stream.read_u8()); // unknown
-    params.tracking_unit = optional_id!(try!(stream.read_i16()));
-    params.tracking_unit_used = try!(stream.read_u8()) != 0;
-    params.tracking_unit_density = try!(stream.read_f32());
-    try!(stream.read_u8()); // unknown
+    params.speed = stream.read_f32()?;
+    params.walking_graphics[0] = optional_id!(stream.read_i16()?);
+    params.walking_graphics[1] = optional_id!(stream.read_i16()?);
+    params.rotation_speed = stream.read_f32()?;
+    stream.read_u8()?; // unknown
+    params.tracking_unit = optional_id!(stream.read_i16()?);
+    params.tracking_unit_used = stream.read_u8()? != 0;
+    params.tracking_unit_density = stream.read_f32()?;
+    stream.read_u8()?; // unknown
     Ok(params)
 }
 
 fn read_commandable_params<R: Read>(stream: &mut R) -> Result<CommandableParams> {
     let mut params: CommandableParams = Default::default();
-    params.action_when_discovered_id = try!(stream.read_i16());
-    params.search_radius = try!(stream.read_f32());
-    params.work_rate = try!(stream.read_f32());
-    params.drop_sites[0] = try!(stream.read_i16());
-    params.drop_sites[1] = try!(stream.read_i16());
-    params.task_swap_id = try!(stream.read_i8());
-    params.attack_sound = try!(stream.read_i16());
-    params.move_sound = try!(stream.read_i16());
-    params.animal_mode = try!(stream.read_i8());
+    params.action_when_discovered_id = stream.read_i16()?;
+    params.search_radius = stream.read_f32()?;
+    params.work_rate = stream.read_f32()?;
+    params.drop_sites[0] = stream.read_i16()?;
+    params.drop_sites[1] = stream.read_i16()?;
+    params.task_swap_id = stream.read_i8()?;
+    params.attack_sound = stream.read_i16()?;
+    params.move_sound = stream.read_i16()?;
+    params.animal_mode = stream.read_i8()?;
 
-    let command_count = try!(stream.read_u16()) as usize;
-    params.commands = try!(stream.read_array(command_count, |c| read_unit_command(c)));
+    let command_count = stream.read_u16()? as usize;
+    params.commands = stream.read_array(command_count, |c| read_unit_command(c))?;
     Ok(params)
 }
 
 fn read_unit_command<R: Read>(stream: &mut R) -> Result<UnitCommand> {
     let mut command: UnitCommand = Default::default();
-    command.enabled = try!(stream.read_u16()) != 0;
-    command.id = required_id!(try!(stream.read_i16()));
-    try!(stream.read_u8()); // unknown
-    command.type_id = try!(stream.read_i16());
-    command.class_id = try!(stream.read_i16());
-    command.unit_id = optional_id!(try!(stream.read_i16()));
-    command.terrain_id = optional_id!(try!(stream.read_i16()));
-    command.resource_in = try!(stream.read_i16());
-    command.resource_productivity_multiplier = try!(stream.read_i16());
-    command.resource_out = try!(stream.read_i16());
-    command.resource = try!(stream.read_i16());
-    command.quantity = try!(stream.read_f32());
-    command.execution_radius = try!(stream.read_f32());
-    command.extra_range = try!(stream.read_f32());
-    try!(stream.read_u8()); // unknown
-    try!(stream.read_f32()); // unknown
-    command.selection_enabler = try!(stream.read_i8());
-    try!(stream.read_u8()); // unknown
-    command.plunder_source = try!(stream.read_i16());
-    try!(stream.read_i16()); // unknown
-    command.selection_mode = try!(stream.read_i8());
-    command.right_click_mode = try!(stream.read_i8());
-    try!(stream.read_u8()); // unknown
-    command.tool_graphic_id = optional_id!(try!(stream.read_i16()));
-    command.proceeding_graphic_id = optional_id!(try!(stream.read_i16()));
-    command.action_graphic_id = optional_id!(try!(stream.read_i16()));
-    command.carrying_graphic_id = optional_id!(try!(stream.read_i16()));
-    command.execution_sound_id = optional_id!(try!(stream.read_i16()));
-    command.resource_deposit_sound_id = optional_id!(try!(stream.read_i16()));
+    command.enabled = stream.read_u16()? != 0;
+    command.id = required_id!(stream.read_i16()?);
+    stream.read_u8()?; // unknown
+    command.type_id = stream.read_i16()?;
+    command.class_id = stream.read_i16()?;
+    command.unit_id = optional_id!(stream.read_i16()?);
+    command.terrain_id = optional_id!(stream.read_i16()?);
+    command.resource_in = stream.read_i16()?;
+    command.resource_productivity_multiplier = stream.read_i16()?;
+    command.resource_out = stream.read_i16()?;
+    command.resource = stream.read_i16()?;
+    command.quantity = stream.read_f32()?;
+    command.execution_radius = stream.read_f32()?;
+    command.extra_range = stream.read_f32()?;
+    stream.read_u8()?; // unknown
+    stream.read_f32()?; // unknown
+    command.selection_enabler = stream.read_i8()?;
+    stream.read_u8()?; // unknown
+    command.plunder_source = stream.read_i16()?;
+    stream.read_i16()?; // unknown
+    command.selection_mode = stream.read_i8()?;
+    command.right_click_mode = stream.read_i8()?;
+    stream.read_u8()?; // unknown
+    command.tool_graphic_id = optional_id!(stream.read_i16()?);
+    command.proceeding_graphic_id = optional_id!(stream.read_i16()?);
+    command.action_graphic_id = optional_id!(stream.read_i16()?);
+    command.carrying_graphic_id = optional_id!(stream.read_i16()?);
+    command.execution_sound_id = optional_id!(stream.read_i16()?);
+    command.resource_deposit_sound_id = optional_id!(stream.read_i16()?);
     Ok(command)
 }
 
 fn read_battle_params<R: Read>(stream: &mut R) -> Result<BattleParams> {
     let mut params: BattleParams = Default::default();
-    params.default_armor = try!(stream.read_u8());
+    params.default_armor = stream.read_u8()?;
 
-    let attack_count = try!(stream.read_u16()) as usize;
-    params.attacks = try!(stream.read_array(attack_count, |c| -> Result<(i16, i16)> {
-        Ok((try!(c.read_i16()), try!(c.read_i16())))
-    }));
+    let attack_count = stream.read_u16()? as usize;
+    params.attacks = stream.read_array(attack_count, |c| -> Result<(i16, i16)> {
+        Ok((c.read_i16()?, c.read_i16()?))
+    })?;
 
-    let armor_count = try!(stream.read_u16()) as usize;
-    params.armors = try!(stream.read_array(armor_count, |c| -> Result<(i16, i16)> {
-        Ok((try!(c.read_i16()), try!(c.read_i16())))
-    }));
+    let armor_count = stream.read_u16()? as usize;
+    params.armors = stream.read_array(armor_count, |c| -> Result<(i16, i16)> {
+        Ok((c.read_i16()?, c.read_i16()?))
+    })?;
 
-    params.terrain_restriction_for_damage_multiplier = try!(stream.read_i16());
-    params.max_range = try!(stream.read_f32());
-    params.blast_width = try!(stream.read_f32());
-    params.reload_time = try!(stream.read_f32());
-    params.projectile_unit_id = optional_id!(try!(stream.read_i16()));
-    params.accuracy_percent = try!(stream.read_i16());
-    params.tower_mode = try!(stream.read_i8());
-    params.frame_delay = try!(stream.read_i16());
+    params.terrain_restriction_for_damage_multiplier = stream.read_i16()?;
+    params.max_range = stream.read_f32()?;
+    params.blast_width = stream.read_f32()?;
+    params.reload_time = stream.read_f32()?;
+    params.projectile_unit_id = optional_id!(stream.read_i16()?);
+    params.accuracy_percent = stream.read_i16()?;
+    params.tower_mode = stream.read_i8()?;
+    params.frame_delay = stream.read_i16()?;
     for i in 0..3 {
-        params.graphic_displacements[i] = try!(stream.read_f32());
+        params.graphic_displacements[i] = stream.read_f32()?;
     }
-    params.blast_attack_level = try!(stream.read_i8());
-    params.min_range = try!(stream.read_f32());
-    params.attack_graphic_id = optional_id!(try!(stream.read_i16()));
-    params.displayed_melee_armour = try!(stream.read_i16());
-    params.displayed_attack = try!(stream.read_i16());
-    params.displayed_range = try!(stream.read_f32());
-    params.displayed_reload_time = try!(stream.read_f32());
+    params.blast_attack_level = stream.read_i8()?;
+    params.min_range = stream.read_f32()?;
+    params.attack_graphic_id = optional_id!(stream.read_i16()?);
+    params.displayed_melee_armour = stream.read_i16()?;
+    params.displayed_attack = stream.read_i16()?;
+    params.displayed_range = stream.read_f32()?;
+    params.displayed_reload_time = stream.read_f32()?;
     Ok(params)
 }
 
 fn read_projectile_params<R: Read>(stream: &mut R) -> Result<ProjectileParams> {
     let mut params: ProjectileParams = Default::default();
-    params.stretch_mode = try!(stream.read_i8());
-    params.smart_mode = try!(stream.read_i8());
-    params.drop_animation_mode = try!(stream.read_i8());
-    params.penetration_mode = try!(stream.read_i8());
-    try!(stream.read_u8()); // unknown
-    params.projectile_arc = try!(stream.read_f32());
+    params.stretch_mode = stream.read_i8()?;
+    params.smart_mode = stream.read_i8()?;
+    params.drop_animation_mode = stream.read_i8()?;
+    params.penetration_mode = stream.read_i8()?;
+    stream.read_u8()?; // unknown
+    params.projectile_arc = stream.read_f32()?;
     Ok(params)
 }
 
 fn read_trainable_params<R: Read>(stream: &mut R) -> Result<TrainableParams> {
     let mut params: TrainableParams = Default::default();
     params.resource_costs = read_resource_costs!(i16, i16, stream, 3);
-    params.train_time = try!(stream.read_i16());
-    params.train_location_id = optional_id!(try!(stream.read_i16()));
-    params.button_id = try!(stream.read_i8());
-    params.displayed_pierce_armor = try!(stream.read_i16());
+    params.train_time = stream.read_i16()?;
+    params.train_location_id = optional_id!(stream.read_i16()?);
+    params.button_id = stream.read_i8()?;
+    params.displayed_pierce_armor = stream.read_i16()?;
     Ok(params)
 }
 
 fn read_building_params<R: Read>(stream: &mut R) -> Result<BuildingParams> {
     let mut params: BuildingParams = Default::default();
-    params.construction_graphic_id = required_id!(try!(stream.read_i16()));
-    params.adjacent_mode = try!(stream.read_i8());
-    params.graphics_angle = try!(stream.read_i16());
-    params.disappears_when_built = try!(stream.read_u8()) != 0;
-    params.stack_unit_id = optional_id!(try!(stream.read_i16()));
-    params.foundation_terrain_id = optional_id!(try!(stream.read_i16()));
-    params.old_terrain_id = optional_id!(try!(stream.read_i16()));
-    params.research_id = optional_id!(try!(stream.read_i16()));
-    params.construction_sound = try!(stream.read_i16());
+    params.construction_graphic_id = required_id!(stream.read_i16()?);
+    params.adjacent_mode = stream.read_i8()?;
+    params.graphics_angle = stream.read_i16()?;
+    params.disappears_when_built = stream.read_u8()? != 0;
+    params.stack_unit_id = optional_id!(stream.read_i16()?);
+    params.foundation_terrain_id = optional_id!(stream.read_i16()?);
+    params.old_terrain_id = optional_id!(stream.read_i16()?);
+    params.research_id = optional_id!(stream.read_i16()?);
+    params.construction_sound = stream.read_i16()?;
     Ok(params)
 }

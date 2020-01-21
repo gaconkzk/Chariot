@@ -19,20 +19,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 //
-use std::io::Error;
 
 error_chain! {
     types {
         Error, ErrorKind, ChainErr, Result;
     }
-
-    links {
-    }
-
     foreign_links {
-        Error, IoError;
+        Io(::std::io::Error);
+        Utf8(::std::string::FromUtf8Error);
+        Utf16(::std::string::FromUtf16Error);
     }
-
     errors {
         UnrecognizedScenarioVersion {
             display("unrecognized scenario version")

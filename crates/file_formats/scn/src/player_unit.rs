@@ -19,7 +19,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use error::Result;
+use crate::error::Result;
 use identifier::{SpawnId, UnitId};
 
 use chariot_io_tools::ReadExt;
@@ -42,13 +42,13 @@ impl PlayerUnit {
 
     pub fn read_from_stream<S: Read>(stream: &mut S) -> Result<PlayerUnit> {
         let mut data: PlayerUnit = Default::default();
-        data.position_x = try!(stream.read_f32());
-        data.position_y = try!(stream.read_f32());
-        data.position_z = try!(stream.read_f32());
-        data.spawn_id = optional_id!(try!(stream.read_i32()));
-        data.unit_id = required_id!(try!(stream.read_i16()));
-        data.state = try!(stream.read_u8());
-        data.rotation = try!(stream.read_f32());
+        data.position_x = stream.read_f32()?;
+        data.position_y = stream.read_f32()?;
+        data.position_z = stream.read_f32()?;
+        data.spawn_id = optional_id!(stream.read_i32()?);
+        data.unit_id = required_id!(stream.read_i16()?);
+        data.state = stream.read_u8()?;
+        data.rotation = stream.read_f32()?;
         Ok(data)
     }
 }
