@@ -20,7 +20,7 @@
 // SOFTWARE.
 //
 
-use error::Result;
+use crate::error::Result;
 
 use identifier::PlayerColorId;
 use chariot_io_tools::ReadExt;
@@ -37,15 +37,15 @@ pub struct PlayerColor {
 pub fn read_player_colors<R: Read + Seek>(stream: &mut R) -> Result<Vec<PlayerColor>> {
     let mut player_colors = Vec::new();
 
-    let color_count = try!(stream.read_u16());
+    let color_count = stream.read_u16()?;
     for _ in 0..color_count {
         let mut color: PlayerColor = Default::default();
-        color.name = try!(stream.read_sized_str(30));
-        color.id = required_id!(try!(stream.read_i16()));
-        try!(stream.read_u16()); // unknown; skip
+        color.name = stream.read_sized_str(30)?;
+        color.id = required_id!(stream.read_i16()?);
+        stream.read_u16()?; // unknown; skip
 
-        color.palette_index = try!(stream.read_u8());
-        try!(stream.read_u8()); // unknown byte
+        color.palette_index = stream.read_u8()?;
+        stream.read_u8()?; // unknown byte
 
         player_colors.push(color);
     }

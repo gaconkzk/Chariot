@@ -19,17 +19,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-extern crate chariot_drs as drs;
-extern crate chariot_slp as slp;
-extern crate chariot_palette as palette;
-
-extern crate minifb;
-
 #[macro_use(value_t)]
 extern crate clap;
 
 use clap::{App, Arg};
 use std::cmp;
+
+use chariot_drs as drs;
+use chariot_slp as slp;
+use chariot_palette as palette;
 
 use std::io;
 use std::process;
@@ -166,9 +164,12 @@ fn main() {
     let mut frame_index: usize = 0;
     let mut current_frame = get_frame(&slp, &palette, frame_index);
 
+    let width = current_frame.width;
+    let height = current_frame.height;
+
     let mut window = match minifb::Window::new("slp_viewer",
-                                               current_frame.width,
-                                               current_frame.height,
+                                               width,
+                                               height,
                                                minifb::WindowOptions::default()) {
         Ok(win) => win,
         Err(err) => {
@@ -178,7 +179,9 @@ fn main() {
     };
 
     while window.is_open() {
-        window.update_with_buffer(&current_frame.buffer);
+        window.update_with_buffer(&current_frame.buffer,
+            width,
+            height).unwrap();
         thread::sleep(Duration::from_millis(100));
 
         let previous_frame_index = frame_index;

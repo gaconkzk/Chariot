@@ -20,7 +20,7 @@
 // SOFTWARE.
 //
 
-use error::Result;
+use crate::error::Result;
 
 use identifier::{RandomMapScriptId, TerrainId, UnitId};
 use chariot_io_tools::{ReadArrayExt, ReadExt};
@@ -92,15 +92,15 @@ pub struct RandomMap {
 pub fn read_random_maps<R: Read + Seek>(stream: &mut R) -> Result<Vec<RandomMap>> {
     let mut random_maps = Vec::new();
 
-    let random_map_count = try!(stream.read_u32()) as usize;
-    try!(stream.read_u32()); // Unused: random map pointer
+    let random_map_count = stream.read_u32()? as usize;
+    stream.read_u32()?; // Unused: random map pointer
     for _ in 0..random_map_count {
         // Not certain how useful the header is since most of its information is
         // repeated in the actual random map data; just drop it for now
-        try!(read_random_map_header(stream));
+        read_random_map_header(stream)?;
     }
     for _ in 0..random_map_count {
-        random_maps.push(try!(read_random_map(stream)));
+        random_maps.push(read_random_map(stream)?);
     }
 
     Ok(random_maps)
@@ -108,96 +108,96 @@ pub fn read_random_maps<R: Read + Seek>(stream: &mut R) -> Result<Vec<RandomMap>
 
 fn read_map_unit<R: Read>(stream: &mut R) -> Result<MapUnit> {
     let mut unit: MapUnit = Default::default();
-    unit.unit_id = required_id!(try!(stream.read_i32()));
-    unit.host_terrain_id = optional_id!(try!(stream.read_i32()));
-    try!(stream.read_i32()); // Unknown
-    unit.objects_per_group = try!(stream.read_i32());
-    unit.fluctuation = try!(stream.read_i32());
-    unit.groups_per_player = try!(stream.read_i32());
-    unit.group_radius = try!(stream.read_i32());
-    unit.own_at_start = try!(stream.read_i32());
-    unit.set_place_for_all_players = try!(stream.read_i32());
-    unit.min_distance_to_players = try!(stream.read_i32());
-    unit.max_distance_to_players = try!(stream.read_i32());
+    unit.unit_id = required_id!(stream.read_i32()?);
+    unit.host_terrain_id = optional_id!(stream.read_i32()?);
+    stream.read_i32()?; // Unknown
+    unit.objects_per_group = stream.read_i32()?;
+    unit.fluctuation = stream.read_i32()?;
+    unit.groups_per_player = stream.read_i32()?;
+    unit.group_radius = stream.read_i32()?;
+    unit.own_at_start = stream.read_i32()?;
+    unit.set_place_for_all_players = stream.read_i32()?;
+    unit.min_distance_to_players = stream.read_i32()?;
+    unit.max_distance_to_players = stream.read_i32()?;
     Ok(unit)
 }
 
 fn read_map_terrain<R: Read>(stream: &mut R) -> Result<MapTerrain> {
     let mut terrain: MapTerrain = Default::default();
-    terrain.proportion = try!(stream.read_i32());
-    terrain.terrain_id = required_id!(try!(stream.read_i32()));
-    terrain.clump_count = try!(stream.read_i32());
-    terrain.spacing_to_other_terrains = try!(stream.read_i32());
-    terrain.placement_zone = try!(stream.read_i32());
-    try!(stream.read_i32()); // Unknown
+    terrain.proportion = stream.read_i32()?;
+    terrain.terrain_id = required_id!(stream.read_i32()?);
+    terrain.clump_count = stream.read_i32()?;
+    terrain.spacing_to_other_terrains = stream.read_i32()?;
+    terrain.placement_zone = stream.read_i32()?;
+    stream.read_i32()?; // Unknown
     Ok(terrain)
 }
 
 fn read_base_zone<R: Read + Seek>(stream: &mut R) -> Result<BaseZone> {
     let mut zone: BaseZone = Default::default();
-    try!(stream.read_u32()); // Unknown
-    zone.base_terrain_id = required_id!(try!(stream.read_i32()));
-    zone.space_between_players = try!(stream.read_i32());
-    try!(stream.seek(SeekFrom::Current(20))); // 20 unknown bytes
-    zone.start_area_radius = try!(stream.read_i32());
-    try!(stream.seek(SeekFrom::Current(8))); // 8 unknown bytes
+    stream.read_u32()?; // Unknown
+    zone.base_terrain_id = required_id!(stream.read_i32()?);
+    zone.space_between_players = stream.read_i32()?;
+    stream.seek(SeekFrom::Current(20))?; // 20 unknown bytes
+    zone.start_area_radius = stream.read_i32()?;
+    stream.seek(SeekFrom::Current(8))?; // 8 unknown bytes
     Ok(zone)
 }
 
 fn read_random_map<R: Read + Seek>(stream: &mut R) -> Result<RandomMap> {
     let mut map: RandomMap = Default::default();
-    map.border_sw = try!(stream.read_i32());
-    map.border_nw = try!(stream.read_i32());
-    map.border_ne = try!(stream.read_i32());
-    map.border_se = try!(stream.read_i32());
-    map.border_usage = try!(stream.read_i32());
-    map.water_shape = try!(stream.read_i32());
-    map.non_base_terrain_id = required_id!(try!(stream.read_i32()));
-    map.base_zone_coverage = try!(stream.read_i32());
-    try!(stream.read_i32()); // Unknown
+    map.border_sw = stream.read_i32()?;
+    map.border_nw = stream.read_i32()?;
+    map.border_ne = stream.read_i32()?;
+    map.border_se = stream.read_i32()?;
+    map.border_usage = stream.read_i32()?;
+    map.water_shape = stream.read_i32()?;
+    map.non_base_terrain_id = required_id!(stream.read_i32()?);
+    map.base_zone_coverage = stream.read_i32()?;
+    stream.read_i32()?; // Unknown
 
-    let base_zone_count = try!(stream.read_u32()) as usize;
-    try!(stream.read_u32()); // Unused: Base zone pointer
-    map.base_zones = try!(stream.read_array(base_zone_count, |c| read_base_zone(c)));
+    let base_zone_count = stream.read_u32()? as usize;
+    stream.read_u32()?; // Unused: Base zone pointer
+    map.base_zones = stream.read_array(base_zone_count, |c| read_base_zone(c))?;
 
-    let terrain_count = try!(stream.read_u32()) as usize;
-    try!(stream.read_u32()); // Unused: Terrain pointer
-    map.terrains = try!(stream.read_array(terrain_count, |c| read_map_terrain(c)));
+    let terrain_count = stream.read_u32()? as usize;
+    stream.read_u32()?; // Unused: Terrain pointer
+    map.terrains = stream.read_array(terrain_count, |c| read_map_terrain(c))?;
 
-    let unit_count = try!(stream.read_u32()) as usize;
-    try!(stream.read_u32()); // Unused: Unit pointer
-    map.units = try!(stream.read_array(unit_count, |c| read_map_unit(c)));
+    let unit_count = stream.read_u32()? as usize;
+    stream.read_u32()?; // Unused: Unit pointer
+    map.units = stream.read_array(unit_count, |c| read_map_unit(c))?;
 
-    let unknown_count = try!(stream.read_u32()) as i64;
-    try!(stream.read_u32()); // Unused: Unknown pointer
-    try!(stream.seek(SeekFrom::Current(24 * unknown_count))); // Skip unknown data
+    let unknown_count = stream.read_u32()? as i64;
+    stream.read_u32()?; // Unused: Unknown pointer
+    stream.seek(SeekFrom::Current(24 * unknown_count))?; // Skip unknown data
 
     Ok(map)
 }
 
 fn read_random_map_header<R: Read + Seek>(stream: &mut R) -> Result<RandomMapHeader> {
     let mut header: RandomMapHeader = Default::default();
-    header.script_id = required_id!(try!(stream.read_i32()));
-    header.border_sw = try!(stream.read_i32());
-    header.border_nw = try!(stream.read_i32());
-    header.border_ne = try!(stream.read_i32());
-    header.border_se = try!(stream.read_i32());
-    header.border_usage = try!(stream.read_i32());
-    header.water_shape = try!(stream.read_i32());
-    header.non_base_terrain_id = required_id!(try!(stream.read_i32()));
-    header.base_zone_coverage = try!(stream.read_i32());
-    try!(stream.read_i32()); // Unknown
+    header.script_id = required_id!(stream.read_i32()?);
+    header.border_sw = stream.read_i32()?;
+    header.border_nw = stream.read_i32()?;
+    header.border_ne = stream.read_i32()?;
+    header.border_se = stream.read_i32()?;
+    header.border_usage = stream.read_i32()?;
+    header.water_shape = stream.read_i32()?;
+    header.non_base_terrain_id = required_id!(stream.read_i32()?);
+    header.base_zone_coverage = stream.read_i32()?;
+    stream.read_i32()?; // Unknown
 
-    header.base_zone_count = try!(stream.read_u32());
-    try!(stream.read_i32()); // Unused: Base zone pointer
+    header.base_zone_count = stream.read_u32()?;
+    stream.read_i32()?; // Unused: Base zone pointer
 
-    header.terrain_count = try!(stream.read_u32());
-    try!(stream.read_i32()); // Unused: Terrain pointer
+    header.terrain_count = stream.read_u32()?;
+    stream.read_i32()?; // Unused: Terrain pointer
 
-    header.unit_count = try!(stream.read_u32());
-    try!(stream.read_i32()); // Unused: Unit pointer
+    header.unit_count = stream.read_u32()?;
+    stream.read_i32()?; // Unused: Unit pointer
 
-    try!(stream.read_i32()); // Unknown count
-    try!(stream.read_i32()); // Unused: unknown pointer
+    stream.read_i32()?; // Unknown count
+    stream.read_i32()?; // Unused: unknown pointer
     Ok(header)
 }

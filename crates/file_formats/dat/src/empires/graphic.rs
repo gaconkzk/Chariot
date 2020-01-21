@@ -20,7 +20,7 @@
 // SOFTWARE.
 //
 
-use error::Result;
+use crate::error::Result;
 
 use identifier::{SlpFileId, PlayerColorId, GraphicId, SoundGroupId};
 use chariot_io_tools::{ReadArrayExt, ReadExt};
@@ -82,41 +82,41 @@ pub struct Graphic {
 
 pub fn read_graphics<R: Read + Seek>(stream: &mut R) -> Result<Vec<Graphic>> {
     let mut graphics = Vec::new();
-    let graphic_count = try!(stream.read_u16()) as usize;
+    let graphic_count = stream.read_u16()? as usize;
 
     // No clue what these are pointing to (the numbers are too large to be file offsets),
     // but we need to skip a graphic if one of these pointers is zero
-    let graphic_pointers = try!(stream.read_array(graphic_count, |c| c.read_u32()));
+    let graphic_pointers = stream.read_array(graphic_count, |c| c.read_u32())?;
     for graphic_pointer in &graphic_pointers {
         if *graphic_pointer == 0 {
             continue;
         }
 
         let mut graphic: Graphic = Default::default();
-        graphic.name = try!(stream.read_sized_str(21));
-        graphic.short_name = try!(stream.read_sized_str(13));
-        graphic.slp_id = optional_id!(try!(stream.read_i32()));
+        graphic.name = stream.read_sized_str(21)?;
+        graphic.short_name = stream.read_sized_str(13)?;
+        graphic.slp_id = optional_id!(stream.read_i32()?);
 
-        try!(stream.seek(SeekFrom::Current(2))); // skip 2 unknown bytes
-        graphic.layer = try!(stream.read_u8());
+        stream.seek(SeekFrom::Current(2))?; // skip 2 unknown bytes
+        graphic.layer = stream.read_u8()?;
 
-        graphic.player_color_id = optional_id!(try!(stream.read_i8()));
-        graphic.second_player_color_id = optional_id!(try!(stream.read_i8()));
-        graphic.replay = try!(stream.read_u8()) != 0;
-        graphic.coordinates = try!(stream.read_array(4, |c| c.read_u16()));
+        graphic.player_color_id = optional_id!(stream.read_i8()?);
+        graphic.second_player_color_id = optional_id!(stream.read_i8()?);
+        graphic.replay = stream.read_u8()? != 0;
+        graphic.coordinates = stream.read_array(4, |c| c.read_u16())?;
 
-        let delta_count = try!(stream.read_u16()) as usize;
-        graphic.sound_group_id = optional_id!(try!(stream.read_i16()));
-        let attack_sound_used = try!(stream.read_u8()) as usize;
-        graphic.frame_count = try!(stream.read_u16());
-        graphic.angle_count = try!(stream.read_u16());
-        graphic.new_speed = try!(stream.read_f32());
-        graphic.frame_rate = try!(stream.read_f32());
-        graphic.replay_delay = try!(stream.read_f32());
-        graphic.sequence_type = try!(stream.read_u8());
-        graphic.id = required_id!(try!(stream.read_i16()));
-        graphic.mirror_mode = try!(stream.read_u8());
-        graphic.deltas = try!(stream.read_array(delta_count, |c| read_delta(c)))
+        let delta_count = stream.read_u16()? as usize;
+        graphic.sound_group_id = optional_id!(stream.read_i16()?);
+        let attack_sound_used = stream.read_u8()? as usize;
+        graphic.frame_count = stream.read_u16()?;
+        graphic.angle_count = stream.read_u16()?;
+        graphic.new_speed = stream.read_f32()?;
+        graphic.frame_rate = stream.read_f32()?;
+        graphic.replay_delay = stream.read_f32()?;
+        graphic.sequence_type = stream.read_u8()?;
+        graphic.id = required_id!(stream.read_i16()?);
+        graphic.mirror_mode = stream.read_u8()?;
+        graphic.deltas = stream.read_array(delta_count, |c| read_delta(c))?
             .into_iter()
             .filter_map(|d| d)
             .collect();
@@ -124,7 +124,7 @@ pub fn read_graphics<R: Read + Seek>(stream: &mut R) -> Result<Vec<Graphic>> {
         if attack_sound_used != 0 {
             // three sounds per angle
             let attack_sound_count = 3 * graphic.angle_count as usize;
-            graphic.attack_sounds = try!(stream.read_array(attack_sound_count, |c| read_attack_sound(c)))
+            graphic.attack_sounds = stream.read_array(attack_sound_count, |c| read_attack_sound(c))?
                 .into_iter()
                 .filter_map(|a| a)
                 .collect();
@@ -136,22 +136,22 @@ pub fn read_graphics<R: Read + Seek>(stream: &mut R) -> Result<Vec<Graphic>> {
 
 fn read_delta<R: Read + Seek>(stream: &mut R) -> Result<Option<GraphicDelta>> {
     let mut delta: GraphicDelta = Default::default();
-    let graphic_id = optional_id!(try!(stream.read_i16()));
+    let graphic_id = optional_id!(stream.read_i16()?);
     if graphic_id.is_some() {
         delta.graphic_id = graphic_id.unwrap();
     }
-    try!(stream.seek(SeekFrom::Current(6))); // skip unknown bytes
-    delta.offset_x = try!(stream.read_i16());
-    delta.offset_y = try!(stream.read_i16());
-    delta.display_angle = try!(stream.read_i16());
-    try!(stream.seek(SeekFrom::Current(2))); // skip unknown bytes
+    stream.seek(SeekFrom::Current(6))?; // skip unknown bytes
+    delta.offset_x = stream.read_i16()?;
+    delta.offset_y = stream.read_i16()?;
+    delta.display_angle = stream.read_i16()?;
+    stream.seek(SeekFrom::Current(2))?; // skip unknown bytes
     Ok(if graphic_id.is_some() { Some(delta) } else { None })
 }
 
 fn read_attack_sound<R: Read>(stream: &mut R) -> Result<Option<GraphicAttackSound>> {
     let mut attack_sound: GraphicAttackSound = Default::default();
-    attack_sound.sound_delay = try!(stream.read_i16());
-    let sound_group_id = optional_id!(try!(stream.read_i16()));
+    attack_sound.sound_delay = stream.read_i16()?;
+    let sound_group_id = optional_id!(stream.read_i16()?);
     if sound_group_id.is_some() {
         attack_sound.sound_group_id = sound_group_id.unwrap();
     }

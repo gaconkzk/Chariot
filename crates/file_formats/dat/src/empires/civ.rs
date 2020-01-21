@@ -20,9 +20,9 @@
 // SOFTWARE.
 //
 
-use empires::resource::ResourceType;
-use empires::unit::{Unit, read_unit};
-use error::Result;
+use super::resource::ResourceType;
+use super::unit::{Unit, read_unit};
+use crate::error::Result;
 
 use identifier::{SoundGroupId, CivilizationId, AgeId, UnitId, ResearchId};
 use chariot_io_tools::{ReadArrayExt, ReadExt};
@@ -81,8 +81,8 @@ impl Civilization {
 }
 
 pub fn read_civs<R: Read + Seek>(stream: &mut R) -> Result<Vec<Civilization>> {
-    let civ_count = try!(stream.read_u16()) as usize;
-    let mut result = try!(stream.read_array(civ_count, |c| read_civ(c)));
+    let civ_count = (stream.read_u16()?) as usize;
+    let mut result: Vec<Civilization> = stream.read_array(civ_count, |c| read_civ(c))?;
     for (index, civ) in result.iter_mut().enumerate() {
         // The rest of the data files refer to civs with a 1-based index
         civ.id = (index + 1).into();
@@ -92,18 +92,18 @@ pub fn read_civs<R: Read + Seek>(stream: &mut R) -> Result<Vec<Civilization>> {
 
 fn read_civ<R: Read + Seek>(stream: &mut R) -> Result<Civilization> {
     let mut civ: Civilization = Default::default();
-    civ.enabled = try!(stream.read_u8()) != 0;
-    civ.name = try!(stream.read_sized_str(20));
+    civ.enabled = stream.read_u8()? != 0;
+    civ.name = stream.read_sized_str(20)?;
 
-    let starting_value_count = try!(stream.read_u16()) as usize;
-    civ.starting_values.age_id = optional_id!(try!(stream.read_i16()));
+    let starting_value_count = stream.read_u16()? as usize;
+    civ.starting_values.age_id = optional_id!(stream.read_i16()?);
 
     // As far as I can tell, AOE holds a massive blob of floating point data for each civ,
     // and it initializes that blob with whatever is in the file here. Several of the values
     // only make sense in the context of the game having been played for a while
     // (i.e., kill count). Others are useful for the start of the game, however.
     // Only save the values that make sense in the context of starting the game.
-    let starting_values = try!(stream.read_array(starting_value_count, |c| c.read_f32()));
+    let starting_values = stream.read_array(starting_value_count, |c| c.read_f32())?;
     civ.starting_values.resources.insert(ResourceType::Food, starting_values[0]);
     civ.starting_values.resources.insert(ResourceType::Wood, starting_values[1]);
     civ.starting_values.resources.insert(ResourceType::Stone, starting_values[2]);
@@ -117,15 +117,15 @@ fn read_civ<R: Read + Seek>(stream: &mut R) -> Result<Civilization> {
     civ.starting_values.iron_age_research_id = required_id!(starting_values[24] as i32);
     civ.starting_values.attack_warning_sound_id = required_id!(starting_values[26] as i32);
 
-    civ.icon_set = try!(stream.read_i8());
+    civ.icon_set = stream.read_i8()?;
 
-    let unit_count = try!(stream.read_u16()) as usize;
-    let unit_pointers = try!(stream.read_array(unit_count, |c| c.read_i32()));
+    let unit_count = stream.read_u16()? as usize;
+    let unit_pointers = stream.read_array(unit_count, |c| c.read_i32())?;
     for i in 0..unit_count {
         // Similarly with graphics, units have an array of pointers that are meaningless
         // except that if one of them is zero, that unit has to be skipped
         if unit_pointers[i] != 0 {
-            let unit = try!(read_unit(stream));
+            let unit = read_unit(stream)?;
             civ.units.insert(unit.id, unit);
         }
     }

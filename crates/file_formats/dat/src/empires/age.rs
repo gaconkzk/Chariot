@@ -20,8 +20,8 @@
 // SOFTWARE.
 //
 
-use empires::resource::ResourceType;
-use error::Result;
+use super::resource::ResourceType;
+use crate::error::Result;
 
 use identifier::{UnitClassId, AgeId, UnitId, ResearchId};
 use chariot_io_tools::{ReadExt, ReadArrayExt};
@@ -149,8 +149,8 @@ pub struct ResearchEffectGroup {
 }
 
 pub fn read_ages<R: Read + Seek>(stream: &mut R) -> Result<Vec<ResearchEffectGroup>> {
-    let age_count = try!(stream.read_u32()) as usize;
-    let mut ages = try!(stream.read_array(age_count, |c| read_age(c)));
+    let age_count = stream.read_u32()? as usize;
+    let mut ages: Vec<ResearchEffectGroup> = stream.read_array(age_count, |c| read_age(c))?;
     for (index, age) in ages.iter_mut().enumerate() {
         age.id = index.into();
     }
@@ -159,19 +159,19 @@ pub fn read_ages<R: Read + Seek>(stream: &mut R) -> Result<Vec<ResearchEffectGro
 
 pub fn read_age<R: Read + Seek>(stream: &mut R) -> Result<ResearchEffectGroup> {
     let mut age: ResearchEffectGroup = Default::default();
-    age.name = try!(stream.read_sized_str(31));
+    age.name = stream.read_sized_str(31)?;
 
-    let effect_count = try!(stream.read_u16()) as usize;
-    age.effects = try!(stream.read_array(effect_count, |c| read_age_effect(c)));
+    let effect_count = stream.read_u16()? as usize;
+    age.effects = stream.read_array(effect_count, |c| read_age_effect(c))?;
     Ok(age)
 }
 
 fn read_age_effect<R: Read + Seek>(stream: &mut R) -> Result<ResearchEffect> {
-    let type_id = try!(stream.read_i8());
-    let param_a = try!(stream.read_i16());
-    let param_b = try!(stream.read_i16());
-    let param_c = try!(stream.read_i16());
-    let param_d = try!(stream.read_f32());
+    let type_id = stream.read_i8()?;
+    let param_a = stream.read_i16()?;
+    let param_b = stream.read_i16()?;
+    let param_c = stream.read_i16()?;
+    let param_d = stream.read_f32()?;
 
     use self::ResearchEffect::*;
     use self::ResearchEffectValue::*;

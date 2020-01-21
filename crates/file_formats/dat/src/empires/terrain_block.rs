@@ -20,7 +20,7 @@
 // SOFTWARE.
 //
 
-use error::{Result, ErrorKind};
+use crate::error::{Result, ErrorKind};
 
 use identifier::{TerrainId, TerrainBorderId, SlpFrameId, SlpFileId, UnitId, SoundGroupId};
 use chariot_io_tools::{ReadArrayExt, ReadExt};
@@ -179,52 +179,52 @@ impl TerrainBlock {
 pub fn read_terrain_block<R: Read + Seek>(stream: &mut R) -> Result<TerrainBlock> {
     let mut terrain_block: TerrainBlock = Default::default();
 
-    try!(stream.read_i32()); // Map pointer; not needed
-    try!(stream.read_i32()); // Unknown
-    terrain_block.map_width = try!(stream.read_i32());
-    terrain_block.map_height = try!(stream.read_i32());
-    terrain_block.world_width = try!(stream.read_i32());
-    terrain_block.world_height = try!(stream.read_i32());
+    stream.read_i32()?; // Map pointer; not needed
+    stream.read_i32()?; // Unknown
+    terrain_block.map_width = stream.read_i32()?;
+    terrain_block.map_height = stream.read_i32()?;
+    terrain_block.world_width = stream.read_i32()?;
+    terrain_block.world_height = stream.read_i32()?;
 
-    try!(read_tile_sizes(&mut terrain_block, stream));
-    try!(stream.read_u16()); // Unknown
+    read_tile_sizes(&mut terrain_block, stream)?;
+    stream.read_u16()?; // Unknown
 
-    terrain_block.terrains = try!(read_terrains(stream));
+    terrain_block.terrains = read_terrains(stream)?;
 
-    try!(read_terrain_borders(&mut terrain_block, stream));
+    read_terrain_borders(&mut terrain_block, stream)?;
 
-    try!(stream.read_i32()); // Unknown pointer
-    terrain_block.terrains_used = try!(stream.read_u16());
-    terrain_block.borders_used = try!(stream.read_u16());
-    terrain_block.max_terrain = try!(stream.read_i16());
-    terrain_block.tile_width = try!(stream.read_i16());
-    terrain_block.tile_height = try!(stream.read_i16());
-    terrain_block.tile_half_height = try!(stream.read_i16());
-    terrain_block.tile_half_width = try!(stream.read_i16());
-    terrain_block.elevation_height = try!(stream.read_i16());
-    terrain_block.current_row = try!(stream.read_i16());
-    terrain_block.current_col = try!(stream.read_i16());
-    terrain_block.block_begin_row = try!(stream.read_i16());
-    terrain_block.block_end_row = try!(stream.read_i16());
-    terrain_block.block_begin_col = try!(stream.read_i16());
-    terrain_block.block_end_col = try!(stream.read_i16());
+    stream.read_i32()?; // Unknown pointer
+    terrain_block.terrains_used = stream.read_u16()?;
+    terrain_block.borders_used = stream.read_u16()?;
+    terrain_block.max_terrain = stream.read_i16()?;
+    terrain_block.tile_width = stream.read_i16()?;
+    terrain_block.tile_height = stream.read_i16()?;
+    terrain_block.tile_half_height = stream.read_i16()?;
+    terrain_block.tile_half_width = stream.read_i16()?;
+    terrain_block.elevation_height = stream.read_i16()?;
+    terrain_block.current_row = stream.read_i16()?;
+    terrain_block.current_col = stream.read_i16()?;
+    terrain_block.block_begin_row = stream.read_i16()?;
+    terrain_block.block_end_row = stream.read_i16()?;
+    terrain_block.block_begin_col = stream.read_i16()?;
+    terrain_block.block_end_col = stream.read_i16()?;
 
-    try!(stream.read_u32()); // Unknown pointer
-    try!(stream.read_u32()); // Unknown pointer
-    terrain_block.any_frame_change = try!(stream.read_i8());
-    terrain_block.map_visible = try!(stream.read_u8()) != 0;
-    terrain_block.fog = try!(stream.read_u8()) != 0;
+    stream.read_u32()?; // Unknown pointer
+    stream.read_u32()?; // Unknown pointer
+    terrain_block.any_frame_change = stream.read_i8()?;
+    terrain_block.map_visible = stream.read_u8()? != 0;
+    terrain_block.fog = stream.read_u8()? != 0;
 
-    try!(stream.seek(SeekFrom::Current(25))); // Skip 25 unknown bytes
+    stream.seek(SeekFrom::Current(25))?; // Skip 25 unknown bytes
     Ok(terrain_block)
 }
 
 fn read_tile_sizes<R: Read + Seek>(terrain_block: &mut TerrainBlock, stream: &mut R) -> Result<()> {
     for _ in 0..TILE_TYPE_COUNT {
         let mut tile_size: TileSize = Default::default();
-        tile_size.width = try!(stream.read_i16());
-        tile_size.height = try!(stream.read_i16());
-        tile_size.delta_y = try!(stream.read_i16());
+        tile_size.width = stream.read_i16()?;
+        tile_size.height = stream.read_i16()?;
+        tile_size.delta_y = stream.read_i16()?;
         terrain_block.tile_sizes.push(tile_size);
     }
     Ok(())
@@ -238,46 +238,46 @@ fn read_terrains<R: Read + Seek>(stream: &mut R) -> Result<Vec<Terrain>> {
         let mut terrain: Terrain = Default::default();
 
         terrain.id = i.into();
-        terrain.enabled = try!(stream.read_u8()) != 0;
-        try!(stream.read_i8()); // Unused (always zero)
-        terrain.name = try!(stream.read_sized_str(13));
-        terrain.short_name = try!(stream.read_sized_str(13));
-        terrain.slp_id = optional_id!(try!(stream.read_i32()));
-        try!(stream.read_u32()); // Unknown
-        terrain.sound_group_id = optional_id!(try!(stream.read_i32()));
+        terrain.enabled = stream.read_u8()? != 0;
+        stream.read_i8()?; // Unused (always zero)
+        terrain.name = stream.read_sized_str(13)?;
+        terrain.short_name = stream.read_sized_str(13)?;
+        terrain.slp_id = optional_id!(stream.read_i32()?);
+        stream.read_u32()?; // Unknown
+        terrain.sound_group_id = optional_id!(stream.read_i32()?);
 
         for i in 0..3 {
-            terrain.colors[i] = try!(stream.read_u8());
+            terrain.colors[i] = stream.read_u8()?;
         }
         for i in 0..2 {
-            terrain.cliff_colors[i] = try!(stream.read_u8());
+            terrain.cliff_colors[i] = stream.read_u8()?;
         }
-        terrain.pass_terrain_id = optional_id!(try!(stream.read_i8()));
-        terrain.impass_terrain_id = optional_id!(try!(stream.read_i8()));
+        terrain.pass_terrain_id = optional_id!(stream.read_i8()?);
+        terrain.impass_terrain_id = optional_id!(stream.read_i8()?);
 
-        terrain.animated = try!(stream.read_u8()) != 0;
-        terrain.animation_frames = try!(stream.read_i16());
-        terrain.pause_frames = try!(stream.read_i16());
-        terrain.frame_interval = try!(stream.read_f32());
-        terrain.pause_between_loops = try!(stream.read_f32());
-        terrain.frame = try!(stream.read_i16());
-        terrain.draw_frame = try!(stream.read_i16());
-        terrain.animate_last = try!(stream.read_f32());
-        terrain.frame_changed = try!(stream.read_i8());
-        try!(stream.read_i8()); // Unused; always zero
+        terrain.animated = stream.read_u8()? != 0;
+        terrain.animation_frames = stream.read_i16()?;
+        terrain.pause_frames = stream.read_i16()?;
+        terrain.frame_interval = stream.read_f32()?;
+        terrain.pause_between_loops = stream.read_f32()?;
+        terrain.frame = stream.read_i16()?;
+        terrain.draw_frame = stream.read_i16()?;
+        terrain.animate_last = stream.read_f32()?;
+        terrain.frame_changed = stream.read_i8()?;
+        stream.read_i8()?; // Unused; always zero
 
-        terrain.elevation_graphics = try!(stream.read_array(TILE_TYPE_COUNT, |c| read_frame_data(c)));
+        terrain.elevation_graphics = stream.read_array(TILE_TYPE_COUNT, |c| read_frame_data(c))?;
 
-        terrain.terrain_to_draw = optional_id!(try!(stream.read_i16()));
-        terrain.terrain_width = try!(stream.read_i16());
-        terrain.terrain_height = try!(stream.read_i16());
+        terrain.terrain_to_draw = optional_id!(stream.read_i16()?);
+        terrain.terrain_width = stream.read_i16()?;
+        terrain.terrain_height = stream.read_i16()?;
 
-        terrain.terrain_borders = try!(stream.read_array(terrain_count, |c| -> Result<TerrainBorderId> {
-            Ok(required_id!(try!(c.read_i16())))
-        }));
+        terrain.terrain_borders = stream.read_array(terrain_count, |c| -> Result<TerrainBorderId> {
+            Ok(required_id!(c.read_i16()?))
+        })?;
 
-        try!(read_terrain_units(&mut terrain.terrain_units, stream));
-        try!(stream.read_u16()); // Unknown
+        read_terrain_units(&mut terrain.terrain_units, stream)?;
+        stream.read_u16()?; // Unknown
 
         terrains.push(terrain);
     }
@@ -285,11 +285,11 @@ fn read_terrains<R: Read + Seek>(stream: &mut R) -> Result<Vec<Terrain>> {
 }
 
 fn read_terrain_units<R: Read>(terrain_units: &mut Vec<TerrainUnit>, stream: &mut R) -> Result<()> {
-    let (ids, densities, priorities) = (try!(stream.read_array(MAX_TERRAIN_UNITS, |c| c.read_i16())),
-                                        try!(stream.read_array(MAX_TERRAIN_UNITS, |c| c.read_i16())),
-                                        try!(stream.read_array(MAX_TERRAIN_UNITS, |c| c.read_i8())));
+    let (ids, densities, priorities) = (stream.read_array(MAX_TERRAIN_UNITS, |c| c.read_i16())?,
+                                        stream.read_array(MAX_TERRAIN_UNITS, |c| c.read_i16())?,
+                                        stream.read_array(MAX_TERRAIN_UNITS, |c| c.read_i8())?);
 
-    let terrain_units_used = try!(stream.read_i16()) as usize;
+    let terrain_units_used = stream.read_i16()? as usize;
     if terrain_units_used > MAX_TERRAIN_UNITS {
         return Err(ErrorKind::BadFile("invalid number of terrain units used").into());
     }
@@ -306,9 +306,9 @@ fn read_terrain_units<R: Read>(terrain_units: &mut Vec<TerrainUnit>, stream: &mu
 
 fn read_frame_data<R: Read>(stream: &mut R) -> Result<TerrainFrameData> {
     let mut frame_data: TerrainFrameData = Default::default();
-    frame_data.frame_count = try!(stream.read_i16());
-    frame_data.angle_count = try!(stream.read_i16());
-    frame_data.frame_id = required_id!(try!(stream.read_i16()));
+    frame_data.frame_count = stream.read_i16()?;
+    frame_data.angle_count = stream.read_i16()?;
+    frame_data.frame_id = required_id!(stream.read_i16()?);
     Ok(frame_data)
 }
 
@@ -318,40 +318,40 @@ fn read_terrain_borders<R: Read + Seek>(terrain_block: &mut TerrainBlock, stream
         let mut border: TerrainBorder = Default::default();
 
         border.id = i.into();
-        border.enabled = try!(stream.read_u8()) != 0;
-        try!(stream.read_i8()); // Unused (always zero)
-        border.name = try!(stream.read_sized_str(13));
-        border.short_name = try!(stream.read_sized_str(13));
-        border.slp_id = required_id!(try!(stream.read_i32()));
-        try!(stream.read_u32()); // Unknown
-        border.sound_group_id = optional_id!(try!(stream.read_i32()));
+        border.enabled = stream.read_u8()? != 0;
+        stream.read_i8()?; // Unused (always zero)
+        border.name = stream.read_sized_str(13)?;
+        border.short_name = stream.read_sized_str(13)?;
+        border.slp_id = required_id!(stream.read_i32()?);
+        stream.read_u32()?; // Unknown
+        border.sound_group_id = optional_id!(stream.read_i32()?);
 
         for i in 0..3 {
-            border.colors[i] = try!(stream.read_u8());
+            border.colors[i] = stream.read_u8()?;
         }
 
-        border.animated = try!(stream.read_u8()) != 0;
-        border.animation_frames = try!(stream.read_i16());
-        border.pause_frames = try!(stream.read_i16());
-        border.frame_interval = try!(stream.read_f32());
-        border.pause_between_loops = try!(stream.read_f32());
-        border.frame = try!(stream.read_i16());
-        border.draw_frame = try!(stream.read_i16());
-        border.animate_last = try!(stream.read_f32());
-        border.frame_changed = try!(stream.read_i8());
-        try!(stream.read_i8()); // Unused; always zero
+        border.animated = stream.read_u8()? != 0;
+        border.animation_frames = stream.read_i16()?;
+        border.pause_frames = stream.read_i16()?;
+        border.frame_interval = stream.read_f32()?;
+        border.pause_between_loops = stream.read_f32()?;
+        border.frame = stream.read_i16()?;
+        border.draw_frame = stream.read_i16()?;
+        border.animate_last = stream.read_f32()?;
+        border.frame_changed = stream.read_i8()?;
+        stream.read_i8()?; // Unused; always zero
 
-        border.borders = try!(stream.read_array(TILE_TYPE_COUNT, |outer_stream| {
+        border.borders = stream.read_array(TILE_TYPE_COUNT, |outer_stream| {
             outer_stream.read_array(12, |inner_stream| read_frame_data(inner_stream))
-        }));
+        })?;
         if !border.enabled {
             // Don't bother saving all of this data if we're not enabled
             border.borders.clear();
         }
 
-        try!(stream.read_i16()); // Unused; always zero
-        border.underlay_terrain_id = optional_id!(try!(stream.read_i16()));
-        border.border_style = try!(stream.read_i16());
+        stream.read_i16()?; // Unused; always zero
+        border.underlay_terrain_id = optional_id!(stream.read_i16()?);
+        border.border_style = stream.read_i16()?;
 
         terrain_block.terrain_borders.push(border);
     }

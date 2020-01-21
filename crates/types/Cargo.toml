@@ -9,8 +9,8 @@ keywords = ["aoe", "age", "empires", "genie", "engine"]
 authors = ["Kevin Fuller <angered.ghandi@gmail.com>"]
 
 [dependencies]
-nalgebra = "0.12"
-num = "0.1"
+nalgebra = "0.19.0"
+num = "0.2.0"
 
 [dependencies.sdl2]
 git = "https://github.com/AngryLawyer/rust-sdl2.git"

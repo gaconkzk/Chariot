@@ -21,9 +21,7 @@
 // SOFTWARE.
 //
 
-extern crate clap;
-extern crate chariot_dat as dat;
-
+use chariot_dat as dat;
 use clap::{Arg, App};
 
 fn main() {

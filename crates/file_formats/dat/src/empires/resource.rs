@@ -20,12 +20,11 @@
 // SOFTWARE.
 //
 
-use error::Result;
-
 use chariot_io_tools::ReadExt;
 use std::fmt;
+use std::io::Error;
 
-use std::io::prelude::{Read, Write};
+use std::io::prelude::{Read};
 use std::marker::PhantomData;
 
 #[derive(Debug, Clone, Copy, Ord, PartialOrd, Eq, PartialEq)]
@@ -57,7 +56,7 @@ impl Default for ResourceType {
 }
 
 pub trait ReadResourceCost {
-    fn read_resource_cost(&mut self, stream: &mut Read) -> Result<()>;
+    fn read_resource_cost(&mut self, stream: &mut dyn Read) -> Result<(), Error>;
 }
 
 #[derive(Default, Clone, Copy)]
@@ -79,28 +78,28 @@ impl<T: Copy + fmt::Display, E: Copy> fmt::Debug for ResourceCost<T, E> {
 }
 
 impl ReadResourceCost for ResourceCost<i16, u8> {
-    fn read_resource_cost(&mut self, mut stream: &mut Read) -> Result<()> {
-        self.resource_type = ResourceType::from_i16(try!(stream.read_i16()));
-        self.amount = try!(stream.read_i16());
-        self.enabled = try!(stream.read_u8()) != 0;
+    fn read_resource_cost(&mut self, mut stream: &mut dyn Read) -> Result<(), Error> {
+        self.resource_type = ResourceType::from_i16(stream.read_i16()?);
+        self.amount = stream.read_i16()?;
+        self.enabled = stream.read_u8()? != 0;
         Ok(())
     }
 }
 
 impl ReadResourceCost for ResourceCost<i16, i16> {
-    fn read_resource_cost(&mut self, mut stream: &mut Read) -> Result<()> {
-        self.resource_type = ResourceType::from_i16(try!(stream.read_i16()));
-        self.amount = try!(stream.read_i16());
-        self.enabled = try!(stream.read_i16()) != 0;
+    fn read_resource_cost(&mut self, mut stream: &mut dyn Read) -> Result<(), Error> {
+        self.resource_type = ResourceType::from_i16(stream.read_i16()?);
+        self.amount = stream.read_i16()?;
+        self.enabled = stream.read_i16()? != 0;
         Ok(())
     }
 }
 
 impl ReadResourceCost for ResourceCost<f32, u8> {
-    fn read_resource_cost(&mut self, mut stream: &mut Read) -> Result<()> {
-        self.resource_type = ResourceType::from_i16(try!(stream.read_i16()));
-        self.amount = try!(stream.read_f32());
-        self.enabled = try!(stream.read_u8()) != 0;
+    fn read_resource_cost(&mut self, mut stream: &mut dyn Read) -> Result<(), Error> {
+        self.resource_type = ResourceType::from_i16(stream.read_i16()?);
+        self.amount = stream.read_f32()?;
+        self.enabled = stream.read_u8()? != 0;
         Ok(())
     }
 }
@@ -109,10 +108,11 @@ impl ReadResourceCost for ResourceCost<f32, u8> {
 macro_rules! read_resource_costs {
     ($t:ty, $e:ty, $stream:expr, $num:expr) => {
         {
+            use crate::empires::resource::{ ResourceCost, ReadResourceCost };
             let mut result = Vec::new();
             for _ in 0..$num {
                 let mut cost: ResourceCost<$t, $e> = Default::default();
-                try!(cost.read_resource_cost($stream));
+                cost.read_resource_cost($stream)?;
                 if cost.enabled {
                     result.push(cost);
                 }

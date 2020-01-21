@@ -9,8 +9,8 @@ keywords = ["aoe", "age", "empires", "genie", "engine"]
 authors = ["Kevin Fuller <angered.ghandi@gmail.com>"]
 
 [dependencies]
-error-chain = "0.5"
-nalgebra = "0.12"
+error-chain = "0.12.1"
+nalgebra = "0.19.0"
 chariot_drs = "0.1"
 chariot_slp = "0.1"
 chariot_palette = "0.1"

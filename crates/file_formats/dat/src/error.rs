@@ -20,22 +20,14 @@
 // SOFTWARE.
 //
 
-use std::io;
-use std::string::FromUtf8Error;
-
 error_chain! {
     types {
         Error, ErrorKind, ChainErr, Result;
     }
-
-    links {
-    }
-
     foreign_links {
-        io::Error, IoError;
-        FromUtf8Error, Utf8DecodeError;
+        Io(::std::io::Error);
+        Utf8(::std::string::FromUtf8Error);
     }
-
     errors {
         BadFile(reason: &'static str) {
             description("bad empires.dat")

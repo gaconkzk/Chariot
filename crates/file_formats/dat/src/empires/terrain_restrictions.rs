@@ -52,10 +52,10 @@ pub fn read_terrain_restrictions<R: Read + Seek>(stream: &mut R,
                                                  terrain_count: usize)
                                                  -> Result<Vec<TerrainRestriction>> {
     // Skip terrain restriction pointers
-    try!(stream.read_array(terrain_restriction_count, |c| c.read_u32()));
+    stream.read_array(terrain_restriction_count, |c| c.read_u32())?;
 
-    let mut restrictions = try!(stream.read_array(terrain_restriction_count,
-                                                  |c| read_terrain_restriction(c, terrain_count)));
+    let mut restrictions: Vec<TerrainRestriction> = stream.read_array(terrain_restriction_count,
+                                                  |c| read_terrain_restriction(c, terrain_count))?;
     for (index, terrain_restriction) in restrictions.iter_mut().enumerate() {
         terrain_restriction.id = UnitTerrainRestrictionId::from_index(index);
     }

@@ -1,5 +1,6 @@
 [package]
 name = "chariot_dat"
+edition = "2018"
 description = """
     A library for reading/writing Age of Empires (1997) DAT files
 """
@@ -9,11 +10,11 @@ keywords = ["dat", "aoe", "age", "empires", "genie", "engine"]
 authors = ["Kevin Fuller <angered.ghandi@gmail.com>"]
 
 [dependencies]
-error-chain = "0.5"
+error-chain = "0.12.1"
 chariot_io_tools = "0.1"
 
 [dependencies.chariot_identifier]
 path = "../../identifier"
 
 [dev-dependencies]
-clap = "2.17"
+clap = "2.33.0"

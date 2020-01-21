@@ -24,11 +24,6 @@
 #[macro_use]
 extern crate error_chain;
 
-extern crate sdl2;
-extern crate nalgebra;
-
-extern crate chariot_types as types;
-
 mod error;
 mod key;
 mod media;

@@ -3,6 +3,7 @@ name = "chariot_identifier"
 description = """
     Identifier types for Chariot
 """
+edition = "2018"
 license = "MIT"
 version = "0.1.0"
 authors = ["Kevin Fuller <angered.ghandi@gmail.com>"]

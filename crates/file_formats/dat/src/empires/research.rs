@@ -19,9 +19,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use empires::resource::{ResourceCost, ReadResourceCost};
+use super::resource::{ResourceCost};
 
-use error::{Result, ErrorKind};
+use crate::error::{Result, ErrorKind};
 
 use identifier::{LocalizationId, AgeId, UnitId, ResearchId};
 use chariot_io_tools::{ReadExt, ReadArrayExt};
@@ -62,8 +62,8 @@ pub struct Research {
 }
 
 pub fn read_research<R: Read + Seek>(stream: &mut R) -> Result<Vec<Research>> {
-    let research_count = try!(stream.read_u16()) as usize;
-    let mut research = try!(stream.read_array(research_count, |c| read_single_research(c)));
+    let research_count = stream.read_u16()? as usize;
+    let mut research = stream.read_array(research_count, |c| read_single_research(c))?;
     for i in 0..research.len() {
         research[i].id = i.into();
     }
@@ -72,31 +72,31 @@ pub fn read_research<R: Read + Seek>(stream: &mut R) -> Result<Vec<Research>> {
 
 fn read_single_research<R: Read + Seek>(stream: &mut R) -> Result<Research> {
     let mut research: Research = Default::default();
-    research.required_techs = try!(stream.read_array(MAX_REQUIRED_TECHS, |c| c.read_i16()));
+    research.required_techs = stream.read_array(MAX_REQUIRED_TECHS, |c| c.read_i16())?;
     research.resource_costs = read_resource_costs!(i16, u8, stream, RESOURCE_COST_COUNT);
 
-    let actual_required_techs = try!(stream.read_u16()) as usize;
+    let actual_required_techs = stream.read_u16()? as usize;
     if actual_required_techs > MAX_REQUIRED_TECHS {
         return Err(ErrorKind::BadFile("more required techs than possible").into());
     } else {
         research.required_techs.resize(actual_required_techs, Default::default());
     }
 
-    research.location = optional_id!(try!(stream.read_i16()));
-    research.name_id = required_id!(try!(stream.read_i16()));
-    research.description_id = required_id!(try!(stream.read_i16()));
-    research.time_seconds = try!(stream.read_i16());
-    research.age_id = optional_id!(try!(stream.read_i16()));
-    research.type_id = try!(stream.read_i16());
-    research.icon_id = try!(stream.read_i16());
-    research.button_id = try!(stream.read_i8());
-    research.help_id = optional_id!(try!(stream.read_i32()));
-    research.tech_tree_id = optional_id!(try!(stream.read_i32()));
-    try!(stream.read_i32()); // Unknown
+    research.location = optional_id!(stream.read_i16()?);
+    research.name_id = required_id!(stream.read_i16()?);
+    research.description_id = required_id!(stream.read_i16()?);
+    research.time_seconds = stream.read_i16()?;
+    research.age_id = optional_id!(stream.read_i16()?);
+    research.type_id = stream.read_i16()?;
+    research.icon_id = stream.read_i16()?;
+    research.button_id = stream.read_i8()?;
+    research.help_id = optional_id!(stream.read_i32()?);
+    research.tech_tree_id = optional_id!(stream.read_i32()?);
+    stream.read_i32()?; // Unknown
 
-    let name_length = try!(stream.read_u16()) as usize;
+    let name_length = stream.read_u16()? as usize;
     if name_length > 0 {
-        research.name = try!(stream.read_sized_str(name_length));
+        research.name = stream.read_sized_str(name_length)?;
     }
     Ok(research)
 }

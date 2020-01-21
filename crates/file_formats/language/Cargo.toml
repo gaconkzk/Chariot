@@ -9,8 +9,8 @@ keywords = ["language", "aoe", "age", "empires", "genie", "engine"]
 authors = ["Kevin Fuller <angered.ghandi@gmail.com>"]
 
 [dependencies]
-error-chain = "0.5"
+error-chain = "0.12.1"
 chariot_io_tools = "0.1"
 
 [dev-dependencies]
-clap = "2.17"
+clap = "2.33.0"

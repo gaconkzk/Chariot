@@ -1,11 +1,12 @@
 [package]
 name = "slp_viewer"
+edition = "2018"
 version = "0.1.0"
 authors = ["Kevin Fuller <angered.ghandi@gmail.com>"]
 
 [dependencies]
-clap = "2.17"
-minifb = "0.9"
+clap = "2.33.0"
+minifb = "0.15.0"
 chariot_drs = "0.1"
 chariot_slp = "0.1"
 chariot_palette = "0.1"

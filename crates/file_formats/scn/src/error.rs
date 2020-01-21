@@ -19,8 +19,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 //
-
-use std::io;
+use std::io::Error;
 
 error_chain! {
     types {
@@ -31,7 +30,7 @@ error_chain! {
     }
 
     foreign_links {
-        io::Error, IoError;
+        Error, IoError;
     }
 
     errors {

@@ -20,7 +20,7 @@
 // SOFTWARE.
 //
 
-use error::Result;
+use crate::error::Result;
 use std::fs::File;
 use std::io::SeekFrom;
 use std::io::prelude::{Seek, Read};
@@ -49,11 +49,11 @@ impl TileEdgeDb {
     }
 
     pub fn read_from_file<P: AsRef<Path>>(file_name: P) -> Result<TileEdgeDb> {
-        let mut file = try!(File::open(file_name.as_ref()));
-        try!(file.seek(SeekFrom::Start(444)));
+        let mut file = File::open(file_name.as_ref())?;
+        file.seek(SeekFrom::Start(444))?;
 
         let mut bytes = Vec::new();
-        try!(file.read_to_end(&mut bytes));
+        file.read_to_end(&mut bytes)?;
 
         let mut db = TileEdgeDb::new();
 

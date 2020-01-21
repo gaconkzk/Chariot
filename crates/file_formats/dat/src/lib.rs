@@ -26,8 +26,6 @@ extern crate error_chain;
 #[macro_use]
 extern crate chariot_identifier as identifier;
 
-extern crate chariot_io_tools;
-
 mod empires;
 mod tileedge;
 mod error;
