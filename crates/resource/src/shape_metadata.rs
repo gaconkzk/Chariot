@@ -20,10 +20,10 @@
 // SOFTWARE.
 
 
-use drs::DrsFileType;
-use drs_manager::{DrsKey, DrsManager};
-use identifier::SlpFileId;
-use slp::SlpHeader;
+use crate::drs::DrsFileType;
+use crate::drs_manager::{DrsKey, DrsManager};
+use crate::identifier::SlpFileId;
+use crate::slp::SlpHeader;
 
 use std::collections::HashMap;
 use std::io;

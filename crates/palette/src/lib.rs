@@ -20,15 +20,17 @@
 // SOFTWARE.
 //
 
-error_chain! {
-    types {
-        Error, ErrorKind, ChainErr, Result;
-    }
+#![recursion_limit = "1024"] // for the error_chain crate
 
-    foreign_links {
-        IoError(::std::io::Error);
-        WindowBuildError(::sdl2::video::WindowBuildError);
-        IntegerOrSdlError(::sdl2::IntegerOrSdlError);
-        TextureValueError(::sdl2::render::TextureValueError);
-    }
-}
+#[macro_use]
+extern crate error_chain;
+
+mod error;
+mod palette;
+
+pub use error::{ChainErr, Error, ErrorKind, Result};
+
+pub use palette::Palette;
+pub use palette::PaletteColor;
+pub use palette::read_from;
+pub use palette::read_from_file;

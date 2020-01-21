@@ -20,21 +20,21 @@
 // SOFTWARE.
 
 
-use drs::DrsFileType;
-use drs_manager::{DrsKey, DrsManagerRef};
-use error::{ErrorKind, Result};
-use identifier::{PlayerColorId, SlpFileId};
-use media::{Renderer, Texture, TextureBuilder};
+use crate::drs::DrsFileType;
+use crate::drs_manager::{DrsKey, DrsManagerRef};
+use crate::error::{ErrorKind, Result};
+use crate::identifier::{PlayerColorId, SlpFileId};
+use crate::media::{Renderer, Texture, TextureBuilder};
 
 use nalgebra::Vector2;
-use palette::{self, PaletteColor};
-use slp::SlpFile;
+use crate::palette::{self, PaletteColor};
+use crate::slp::SlpFile;
+use crate::types::Rect;
 
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::io;
 use std::rc::Rc;
-use types::Rect;
 
 const SHAPE_PADDING: i32 = 4;
 const PALETTE_FILE_ID: u32 = 50500;
@@ -82,7 +82,7 @@ impl Shape {
         }
 
         let mut texture_builder =
-            try!(TextureBuilder::new(total_rect.w as u32, total_rect.h as u32, &palette));
+            TextureBuilder::new(total_rect.w as u32, total_rect.h as u32, &palette)?;
         for (index, shape) in slp.shapes.iter().enumerate() {
             texture_builder = texture_builder.blit_shape(&shape.pixels,
                                                          Rect::of(0,
@@ -93,7 +93,7 @@ impl Shape {
         }
 
         Ok(Shape {
-            texture: try!(texture_builder.build(renderer)),
+            texture: texture_builder.build(renderer)?,
             frames: dst_rects,
             centers: centers,
         })
@@ -152,11 +152,11 @@ impl ShapeManager {
         let palette = {
                 let borrowed_drs = drs_manager.borrow();
                 let interfac = borrowed_drs.get(DrsKey::Interfac);
-                let bin_table = try!(interfac.find_table(DrsFileType::Binary)
-                    .ok_or(ErrorKind::InterfacBinaryTableMissing));
-                let palette_contents = &try!(bin_table.find_file_contents(PALETTE_FILE_ID)
-                    .ok_or(ErrorKind::InterfacMissingPalette));
-                try!(palette::read_from(&mut io::Cursor::new(palette_contents)))
+                let bin_table = interfac.find_table(DrsFileType::Binary)
+                    .ok_or(ErrorKind::InterfacBinaryTableMissing)?;
+                let palette_contents = &bin_table.find_file_contents(PALETTE_FILE_ID)
+                    .ok_or(ErrorKind::InterfacMissingPalette)?;
+                palette::read_from(&mut io::Cursor::new(palette_contents))?
             }
             .iter()
             .map(|c: &PaletteColor| -> u32 { (*c).into() })
@@ -196,16 +196,16 @@ impl ShapeManager {
         let borrowed_drs = self.drs_manager.borrow();
         let drs_file = borrowed_drs.get(shape_key.drs_key);
 
-        let slp_table = try!(drs_file.find_table(DrsFileType::Slp)
-            .ok_or(ErrorKind::NoSlpTableInDrs(shape_key.drs_key)));
-        
+        let slp_table = drs_file.find_table(DrsFileType::Slp)
+            .ok_or(ErrorKind::NoSlpTableInDrs(shape_key.drs_key))?;
+
         let slp = match slp_table.find_file_contents(*shape_key.slp_id) {
             Some(slp_contents) => {
-                try!(SlpFile::read_from(&mut io::Cursor::new(slp_contents), *shape_key.player_color))
+                SlpFile::read_from(&mut io::Cursor::new(slp_contents), *shape_key.player_color)?
             },
             None => {
                 // Load the "missing" SLP file if we can't find the requested SLP in the DRS archive
-                try!(SlpFile::read_from_file("data/nope-64x64.slp", *shape_key.player_color))
+                SlpFile::read_from_file("data/nope-64x64.slp", *shape_key.player_color)?
             }
         };
 

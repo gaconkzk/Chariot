@@ -1,0 +1,16 @@
+[package]
+authors = ["Taryn Hill <taryn@phrohdoh.com>", "Kevin Fuller <angered.ghandi@gmail.com>"]
+description = "A library for reading/writing Age of Empires (1997) DRS files"
+documentation = "https://docs.rs/chariot_drs/"
+edition = "2018"
+keywords = ["drs", "aoe", "empires", "genie", "engine"]
+license = "MIT"
+name = "chariot_drs"
+readme = "README.md"
+repository = "https://github.com/ChariotEngine/Drs"
+version = "0.1.2"
+
+[dependencies]
+chariot_io_tools = "0.1"
+error-chain = "0.12.1"
+either = "1.5.3"

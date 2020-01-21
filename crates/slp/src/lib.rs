@@ -1,5 +1,6 @@
 // Chariot: An open source reimplementation of Age of Empires (1997)
 // Copyright (c) 2016 Kevin Fuller
+// Copyright (c) 2017 Taryn Hill
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -19,27 +20,44 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+//! Start with [SlpFile](slp/struct.SlpFile.html) if you are decoding SLPs.
+//!
+//! ```ascii
+//! +-----------------------------+
+//! |          SlpHeader          |
+//! +-----------------------------+
+//! |SlpShapeHeader|SlpShapeHeader|
+//! +-----------------------------+
+//! |                             |
+//! | Array of u16 padding pairs  | <-+ Each SlpShapeHeader has a "shape_outline_offset"
+//! |                             |     that points to a pair in this array
+//! +-----------------------------+
+//! |                             |
+//! | Arrays of u32 offsets to    | <-+ Each SlpShapeHeader has a "shape_data_offsets"
+//! |  first command in each row  |     that points to an array
+//! |                             |
+//! +-----------------------------+
+//! |                             |
+//! | Drawing commands used to    |
+//! |  produce indexed image data |
+//! |                             |
+//! +-----------------------------+
+//! ```
+
 #![recursion_limit = "1024"] // for the error_chain crate
 
 #[macro_use]
 extern crate error_chain;
 
-use chariot_drs as drs;
-use chariot_slp as slp;
-use chariot_palette as palette;
-use chariot_media as media;
-use chariot_identifier as identifier;
-use chariot_types as types;
-
 mod error;
-mod game_dir;
-mod drs_manager;
-mod shape_manager;
-mod shape_metadata;
-mod render_command;
+mod slp;
 
-pub use drs_manager::{DrsKey, DrsManager, DrsManagerRef};
-pub use game_dir::GameDir;
-pub use render_command::*;
-pub use shape_manager::{Shape, ShapeKey, ShapeManager, ShapeManagerRef};
-pub use shape_metadata::{ShapeMetadata, ShapeMetadataKey, ShapeMetadataStore, ShapeMetadataStoreRef};
+pub use error::ChainErr;
+pub use error::Error;
+pub use error::ErrorKind;
+pub use error::Result;
+pub use slp::SlpFile;
+pub use slp::SlpHeader;
+pub use slp::SlpLogicalShape;
+pub use slp::SlpPixels;
+pub use slp::SlpShapeHeader;

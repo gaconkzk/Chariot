@@ -20,15 +20,15 @@
 // SOFTWARE.
 //
 
-error_chain! {
-    types {
-        Error, ErrorKind, ChainErr, Result;
-    }
+#![recursion_limit = "1024"] // for the error_chain crate
 
-    foreign_links {
-        IoError(::std::io::Error);
-        WindowBuildError(::sdl2::video::WindowBuildError);
-        IntegerOrSdlError(::sdl2::IntegerOrSdlError);
-        TextureValueError(::sdl2::render::TextureValueError);
-    }
-}
+#[macro_use]
+extern crate error_chain;
+
+mod drs;
+mod error;
+
+pub use drs::DrsFile;
+pub use drs::DrsFileType;
+
+pub use error::{ChainErr, Error, ErrorKind, Result};

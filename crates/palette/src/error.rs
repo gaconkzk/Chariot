@@ -20,15 +20,26 @@
 // SOFTWARE.
 //
 
+use std::io;
+use std::num;
+
 error_chain! {
     types {
         Error, ErrorKind, ChainErr, Result;
     }
 
+    links {
+    }
+
     foreign_links {
-        IoError(::std::io::Error);
-        WindowBuildError(::sdl2::video::WindowBuildError);
-        IntegerOrSdlError(::sdl2::IntegerOrSdlError);
-        TextureValueError(::sdl2::render::TextureValueError);
+        IoError(io::Error);
+        ParseIntError(num::ParseIntError);
+    }
+
+    errors {
+        InvalidPalette(reason: &'static str) {
+            description("invalid palette")
+            display("invalid palette: {}", reason)
+        }
     }
 }

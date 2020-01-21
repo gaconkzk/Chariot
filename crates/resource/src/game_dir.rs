@@ -19,9 +19,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use error::{ErrorKind, Result, Error, ChainErr};
+use crate::error::{ErrorKind, Result, Error, ChainErr};
 
-use std::ascii::AsciiExt;
+// use std::ascii::AsciiExt;
 use std::fs;
 use std::path::{Component, Path, PathBuf};
 
@@ -37,8 +37,8 @@ impl GameDir {
             return Err(error(dir, "Given game data directory doesn't exist"));
         }
 
-        let dir_metadata = try!(fs::metadata(dir)
-            .chain_err(|| "Failed to get metadata on the game data directory"));
+        let dir_metadata = fs::metadata(dir)
+            .chain_err(|| "Failed to get metadata on the game data directory")?;
         if !dir_metadata.is_dir() {
             return Err(error(dir, "Given game data directory isn't a directory"));
         }
@@ -69,10 +69,10 @@ impl GameDir {
             if let Component::Normal(component_name) = component {
                 let component_name = component_name.to_string_lossy();
                 let mut found = false;
-                for dir_entry in try!(fs::read_dir(&full_path)
-                    .chain_err(|| "Failed to traverse game data directory")) {
+                for dir_entry in fs::read_dir(&full_path)
+                    .chain_err(|| "Failed to traverse game data directory")? {
                     let dir_entry =
-                        try!(dir_entry.chain_err(|| "Failed to read directory entry in game data directory"));
+                        dir_entry.chain_err(|| "Failed to read directory entry in game data directory")?;
                     if component_name.eq_ignore_ascii_case(&dir_entry.path()
                         .file_name()
                         .unwrap()

@@ -19,11 +19,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use media::Renderer;
+use crate::media::Renderer;
 use nalgebra::Vector2;
 use std::cmp::{Ordering, PartialOrd};
 use super::{ShapeKey, ShapeManager};
-use types::{Color, Rect};
+use crate::types::{Color, Rect};
 
 #[derive(Copy, Clone, Debug)]
 pub enum RenderCommand {

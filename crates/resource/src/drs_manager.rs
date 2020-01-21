@@ -21,9 +21,9 @@
 //
 
 
-use drs::DrsFile;
-use error::Result;
-use game_dir::GameDir;
+use crate::drs::DrsFile;
+use crate::error::Result;
+use crate::game_dir::GameDir;
 use std::cell::RefCell;
 
 use std::collections::HashMap;
@@ -71,18 +71,18 @@ impl DrsManager {
     }
 
     pub fn preload(&mut self) -> Result<()> {
-        try!(self.preload_drs(DrsKey::Border));
-        try!(self.preload_drs(DrsKey::Graphics));
-        try!(self.preload_drs(DrsKey::Interfac));
-        try!(self.preload_drs(DrsKey::Sounds));
-        try!(self.preload_drs(DrsKey::Terrain));
+        self.preload_drs(DrsKey::Border)?;
+        self.preload_drs(DrsKey::Graphics)?;
+        self.preload_drs(DrsKey::Interfac)?;
+        self.preload_drs(DrsKey::Sounds)?;
+        self.preload_drs(DrsKey::Terrain)?;
         Ok(())
     }
 
     fn preload_drs(&mut self, drs_key: DrsKey) -> Result<()> {
-        let file_name = try!(self.game_dir.find_file(drs_key.path()));
+        let file_name = self.game_dir.find_file(drs_key.path())?;
         println!("Loading {:?}...", file_name);
-        let drs = try!(DrsFile::read_from_file(file_name));
+        let drs = DrsFile::read_from_file(file_name)?;
         self.resources.insert(drs_key, drs);
         Ok(())
     }

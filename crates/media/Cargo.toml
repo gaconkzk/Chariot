@@ -3,6 +3,7 @@ name = "chariot_media"
 description = """
     Chariot media (rendering + audio) crate
 """
+edition = "2018"
 license = "MIT"
 version = "0.1.0"
 keywords = ["aoe", "age", "empires", "genie", "engine"]

@@ -20,13 +20,12 @@
 // SOFTWARE.
 //
 
+use crate::drs;
+use crate::media;
+use crate::palette;
+use crate::slp;
 
-use drs;
-use drs_manager::DrsKey;
-use media;
-use palette;
-use slp;
-
+use crate::drs_manager::DrsKey;
 use std::path::PathBuf;
 
 error_chain! {
@@ -35,13 +34,10 @@ error_chain! {
     }
 
     links {
-        drs::Error, drs::ErrorKind, Drs;
-        media::Error, media::ErrorKind, Media;
-        palette::Error, palette::ErrorKind, Palette;
-        slp::Error, slp::ErrorKind, Slp;
-    }
-
-    foreign_links {
+        Drs(drs::Error, drs::ErrorKind);
+        Media(media::Error, media::ErrorKind);
+        Palette(palette::Error, palette::ErrorKind);
+        Slp(slp::Error, slp::ErrorKind);
     }
 
     errors {

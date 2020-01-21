@@ -274,7 +274,7 @@ impl Num for Fixed {
     type FromStrRadixErr = <f64 as Num>::FromStrRadixErr;
 
     fn from_str_radix(str: &str, radix: u32) -> Result<Fixed, Self::FromStrRadixErr> {
-        let valf = try!(f64::from_str_radix(str, radix));
+        let valf = f64::from_str_radix(str, radix)?;
         Ok(Fixed::from_f64(valf).unwrap())
     }
 }

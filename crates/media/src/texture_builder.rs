@@ -19,16 +19,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use error::{Error, Result};
-use renderer::{Renderer, SdlRenderer};
+use crate::error::{Error, Result};
+use crate::renderer::{Renderer, SdlRenderer};
 use sdl2::pixels::PixelFormatEnum;
 
 use sdl2::surface::Surface;
 
 use std::io::{self, Write};
 use std::mem;
-use texture::Texture;
-use types::Rect;
+use crate::texture::Texture;
+use crate::types::Rect;
 
 pub struct TextureBuilder<'a> {
     surface: Surface<'static>,
@@ -46,9 +46,9 @@ fn to_rgba(palette: &[u32], src_pixels: &[u8], width: usize, height: usize) -> R
             if color_index > 0 {
                 let color = palette[color_index];
                 let color_bytes = unsafe { mem::transmute::<u32, [u8; 4]>(color) };
-                try!(dst_pixels.write(&color_bytes));
+                dst_pixels.write(&color_bytes)?;
             } else {
-                try!(dst_pixels.write(&[0, 0, 0, 0u8]));
+                dst_pixels.write(&[0, 0, 0, 0u8])?;
             }
         }
     }
@@ -59,7 +59,7 @@ fn to_rgba(palette: &[u32], src_pixels: &[u8], width: usize, height: usize) -> R
 impl<'a> TextureBuilder<'a> {
     pub fn new(width: u32, height: u32, palette: &'a [u32]) -> Result<TextureBuilder<'a>> {
         Ok(TextureBuilder {
-            surface: try!(Surface::new(width, height, PixelFormatEnum::RGBA8888)),
+            surface: Surface::new(width, height, PixelFormatEnum::RGBA8888)?,
             palette: palette,
             error: None,
         })

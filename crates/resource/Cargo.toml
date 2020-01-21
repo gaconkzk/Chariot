@@ -3,6 +3,7 @@ name = "chariot_resource"
 description = """
     Chariot resource management crate
 """
+edition = "2018"
 license = "MIT"
 version = "0.1.0"
 keywords = ["aoe", "age", "empires", "genie", "engine"]
@@ -11,9 +12,6 @@ authors = ["Kevin Fuller <angered.ghandi@gmail.com>"]
 [dependencies]
 error-chain = "0.12.1"
 nalgebra = "0.19.0"
-chariot_drs = "0.1"
-chariot_slp = "0.1"
-chariot_palette = "0.1"
 
 [dependencies.chariot_identifier]
 path = "../identifier"
@@ -21,3 +19,9 @@ path = "../identifier"
 path = "../media"
 [dependencies.chariot_types]
 path = "../types"
+[dependencies.chariot_drs]
+path = "../drs"
+[dependencies.chariot_palette]
+path = "../palette"
+[dependencies.chariot_slp]
+path = "../slp"

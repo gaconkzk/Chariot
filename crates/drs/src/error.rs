@@ -20,15 +20,25 @@
 // SOFTWARE.
 //
 
+use std::path::PathBuf;
+
 error_chain! {
     types {
         Error, ErrorKind, ChainErr, Result;
     }
 
+    links {
+    }
+
     foreign_links {
         IoError(::std::io::Error);
-        WindowBuildError(::sdl2::video::WindowBuildError);
-        IntegerOrSdlError(::sdl2::IntegerOrSdlError);
-        TextureValueError(::sdl2::render::TextureValueError);
+        Utf8DecodeError(::std::string::FromUtf8Error);
+    }
+
+    errors {
+        InvalidDrs(path: PathBuf) {
+            description("invalid DRS")
+            display("Invalid DRS: {:?}", path)
+        }
     }
 }

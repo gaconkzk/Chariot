@@ -19,13 +19,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use error::Result;
+use crate::error::Result;
 
 use nalgebra::Vector2;
 
-use sdl2;
-use texture::{self, SdlTexture, Texture};
-use types::{Color, Rect};
+use crate::texture::{SdlTexture, Texture, create_texture};
+use crate::types::{ Rect, Color} ;
 
 // Separate so that it's not exported with the crate
 pub trait SdlRenderer {
@@ -40,15 +39,15 @@ pub struct Renderer {
 
 impl Renderer {
     pub fn new(sdl_context: &mut sdl2::Sdl, width: u32, height: u32, title: &str) -> Result<Renderer> {
-        let video = try!(sdl_context.video());
-        let mut window = try!(video.window(title, width, height)
+        let video = sdl_context.video()?;
+        let mut window = video.window(title, width, height)
             .position_centered()
             .resizable()
             .opengl()
-            .build());
+            .build()?;
         window.set_minimum_size(width, height).expect("set window min size");
 
-        let renderer = try!(window.renderer().present_vsync().build());
+        let renderer = window.renderer().present_vsync().build()?;
         println!("Renderer initialized with {:#?}", renderer.info());
 
         Ok(Renderer {
@@ -123,7 +122,7 @@ impl Renderer {
 impl SdlRenderer for Renderer {
     fn create_texture_from_surface(&mut self, surface: sdl2::surface::Surface) -> Result<Texture> {
         let (width, height) = (surface.width(), surface.height());
-        let sdl_texture = try!(self.renderer.create_texture_from_surface(surface));
-        Ok(texture::create_texture(sdl_texture, width, height))
+        let sdl_texture = self.renderer.create_texture_from_surface(surface)?;
+        Ok(create_texture(sdl_texture, width, height))
     }
 }

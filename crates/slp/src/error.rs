@@ -20,15 +20,28 @@
 // SOFTWARE.
 //
 
+use std::io;
+
 error_chain! {
     types {
         Error, ErrorKind, ChainErr, Result;
     }
 
+    links {
+    }
+
     foreign_links {
-        IoError(::std::io::Error);
-        WindowBuildError(::sdl2::video::WindowBuildError);
-        IntegerOrSdlError(::sdl2::IntegerOrSdlError);
-        TextureValueError(::sdl2::render::TextureValueError);
+        IoError(io::Error);
+    }
+
+    errors {
+        InvalidSlp(reason: String) {
+            description("invalid SLP")
+            display("invalid SLP: {}", reason)
+        }
+        BadLength {
+            description("bad length in SLP")
+            display("bad length in SLP")
+        }
     }
 }

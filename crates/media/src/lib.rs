@@ -31,6 +31,8 @@ mod renderer;
 mod texture;
 mod texture_builder;
 
+use chariot_types as types;
+
 pub use error::ChainErr;
 pub use error::Error;
 pub use error::ErrorKind;

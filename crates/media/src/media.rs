@@ -19,11 +19,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use error::Result;
-use key::{Key, KeyState, KeyStates, MouseButton};
+use crate::error::Result;
+use crate::key::{Key, KeyState, KeyStates, MouseButton};
 
 use nalgebra::Vector2;
-use renderer::Renderer;
+use crate::renderer::Renderer;
 
 use sdl2;
 use std::cell::RefCell;
@@ -45,10 +45,10 @@ pub trait Media {
     fn viewport_size(&self) -> Vector2<u32>;
 }
 
-pub type MediaRef = Rc<RefCell<Box<Media>>>;
+pub type MediaRef = Rc<RefCell<Box<dyn Media>>>;
 
 pub fn create_media(width: u32, height: u32, title: &str) -> Result<MediaRef> {
-    SdlMedia::new(width, height, title).map(|m| Rc::new(RefCell::new(Box::new(m) as Box<Media>)))
+    SdlMedia::new(width, height, title).map(|m| Rc::new(RefCell::new(Box::new(m) as Box<dyn Media>)))
 }
 
 struct SdlMedia {
@@ -67,8 +67,8 @@ struct SdlMedia {
 
 impl SdlMedia {
     fn new(width: u32, height: u32, title: &str) -> Result<SdlMedia> {
-        let mut context = try!(sdl2::init());
-        let renderer = try!(Renderer::new(&mut context, width, height, title));
+        let mut context = sdl2::init()?;
+        let renderer = Renderer::new(&mut context, width, height, title)?;
 
         Ok(SdlMedia {
             context: context,
